@@ -18,7 +18,7 @@ import { PDF as pdfParser } from '/imports/modules/pdfparse';
 Meteor.startup(async () => {
 
 
-    const baseFolder = '/Users/porter/Books';
+    const baseFolder = Meteor.settings.walkingDirs[0];
 
 
     // Make the user agent that of a browser (Google Chrome on Windows)
@@ -86,25 +86,34 @@ Meteor.startup(async () => {
 
     const publishers: Publisher[] = Publishers.find().fetch();
 
-    observableOf(...await walk(baseFolder, ['.pdf']))
+    observableOf(...await walk(baseFolder, Meteor.settings.extensions))
         .pipe(
             // takeWhile((v, i) => i > 10 && i < 12),
             // filter((v, i) => i > 0 && i < 2),
-            filter((v, i) => v.base === 'Wiley.Lean.Impact.How.to.Innovate.for.Radically.Greater.Social.Good.1119506603.pdf'),
+            filter((v, i) => v.base === 'Apress.Working.with.Coders.148422700X.pdf'),
             mergeMap((fileInfo: BookFile) => {
                 const filePath = `${fileInfo.dir}/${fileInfo.base}`;
                 return observableFrom(fs.readFile(filePath))
-                    .pipe(map((data: any) => ({ pdfFile: data, fileInfo })));
+                    .pipe(map((file: any) => ({ file, fileInfo })));
             }),
-            mergeMap(({ pdfFile, fileInfo }) => {
-                return observableFrom(pdfParser(pdfFile))
-                    .pipe(map((pdfData: any) => ({ pdfData, fileInfo })));
+            mergeMap(({ file, fileInfo }) => {
+                if (fileInfo.ext === '.pdf') {
+                    return observableFrom(pdfParser(file))
+                        .pipe(
+                            map((pdfData: any) => ({ pdfBook: (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo}))
+                            );
+                }
+                return observableOf({pdfBook: null, fileInfo});
             })
         )
-        .subscribe(({ pdfData, fileInfo }) => {
-            const pdfBook = (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile();
-            Logger.debug('PDF Book: ', pdfBook);
-            Books.update({ 'fileInfo.name': pdfBook.fileInfo.name }, { $set: pdfBook }, { upsert: true });
+        .subscribe( ( {pdfBook, fileInfo})  => {
+            if (!pdfBook) {
+                Logger.error('Unsupported extension:', fileInfo.ext);
+                return;
+            }
+            if (pdfBook) {
+                Books.update({ 'fileInfo.name': pdfBook.fileInfo.name }, { $set: pdfBook }, { upsert: true });
+            }
         });
 
     // if (isbn) {

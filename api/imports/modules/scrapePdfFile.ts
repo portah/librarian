@@ -156,16 +156,19 @@ export class ScrapePDFFile extends ScrapeFile {
         pdfBook.isbn = isbn;
         pdfBook.numPages = pdfData.numPages;
         pdfBook.description = description;
-        pdfBook.imageBase64 = pdfData.imageBase64;
         pdfBook.publisher = publisher;
         pdfBook.fileInfo = fileInfo;
+        const {text, imageBase64, ...printData} = pdfData;
+        Logger.debug('PDF Book: ', pdfBook, printData);
+        pdfBook.imageBase64 = imageBase64;
+
 
         const tfIdf = new TfIdf();
 
-        tfIdf.addDocument(pdfData.text);
+        tfIdf.addDocument(text);
         let tagsIndex = 0;
         pdfBook.nlpTags = tfIdf.listTerms(0 /*document index*/).filter((item: any) => {
-            if (/^([0-9]+|[a-zA-Z]+[0-9]+)[0-9a-zA-Z]*$/.test(item.term) || tagsIndex > 10) {
+            if (tagsIndex > 10 || /^([0-9]+|[a-zA-Z]+[0-9]+)[0-9a-zA-Z]*$/.test(item.term) || item.term.length < 3) {
                 return false;
             }
             if (stopWords.includes(item.term)) {
@@ -175,9 +178,9 @@ export class ScrapePDFFile extends ScrapeFile {
             return true;
         }).map((item: any) => item.term);
 
-        tfIdf.addDocument(pdfData.text.tokenizeAndStem());
+        tfIdf.addDocument(text.tokenizeAndStem());
         pdfBook.nlpTerms = tfIdf.listTerms(1 /*document index*/).filter((item: any, index: number) => {
-            if (/^([0-9]+|[a-zA-Z]+[0-9]+)[0-9a-zA-Z]*$/.test(item.term) || index > 150) {
+            if (index > 150 || /^([0-9]+|[a-zA-Z]+[0-9]+)[0-9a-zA-Z]*$/.test(item.term)) {
                 return false;
             }
             return true;
