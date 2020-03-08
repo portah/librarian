@@ -57,6 +57,7 @@ Meteor.startup(async () => {
                             .set({ info_title: '.card-header', info_description: 'div.card-body' }),
                     ]
                 })
+                // @ts-ignore
                 .delay(2000)
                 .data((item: any) => observer.next(item))
                 .error((e: any) => { Logger.error(e); return observer.complete(); })

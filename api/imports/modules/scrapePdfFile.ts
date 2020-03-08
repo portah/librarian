@@ -40,6 +40,7 @@ export class ScrapeFile {
 
     constructor(protected fileInfo: any, protected publishers?: Publisher[]) {
         this.aggressiveTokenizer = new AggressiveTokenizer();
+        // @ts-ignore
         PorterStemmer.addStopWords(stopWords);
         PorterStemmer.attach();
     }
