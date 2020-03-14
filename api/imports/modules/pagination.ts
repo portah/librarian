@@ -1,6 +1,6 @@
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
-import { helpers } from 'meteor/ostrio:files';
+import { helpers } from './helpers';
 
 import { Logger } from './logger';
 
@@ -18,7 +18,7 @@ export function paginationCheck(params: any) {
 }
 
 
-export function paginationParams(params: any, serverparams?: any) {
+export function paginationParams(params: any, serverParams?: any) {
 
     if (params && params.fields) {
         check(params.fields, String);
@@ -66,13 +66,13 @@ export function paginationParams(params: any, serverparams?: any) {
         localOptions = { sort: [[params.sortBy, params.sortOrder]], ...localOptions };
     }
 
-    if (!helpers.isUndefined(params.sorting) && params.sorting[1] !== "") {
+    if (!helpers.isUndefined(params.sorting) && params.sorting[1] !=='') {
         // @ts-ignore
         localOptions = { sort: [params.sorting], ...localOptions };
     }
 
-    if (!_.isUndefined(serverparams) && serverparams['options']) {
-        localOptions = { ...localOptions, ...serverparams['options'] };
+    if (!helpers.isUndefined(serverParams) && serverParams['options']) {
+        localOptions = { ...localOptions, ...serverParams['options'] };
     }
 
     let _orselector: any = { $or: [] };
@@ -115,8 +115,8 @@ export function paginationParams(params: any, serverparams?: any) {
         }
     }
 
-    if (!_.isUndefined(serverparams) && serverparams['selector']) {
-        _selector = { ..._selector, ...serverparams['selector'] };
+    if (!helpers.isUndefined(serverParams) && serverParams['selector']) {
+        _selector = { ..._selector, ...serverParams['selector'] };
     }
 
     Logger.debug(_selector);
@@ -129,60 +129,60 @@ export function paginationParams(params: any, serverparams?: any) {
  * @param self - bind now Inside Meteor.Publish pass 'this'
  * @param {Mongo.Collection<any> | any} collection
  * @param params - pagination params
- * @param serverparams - pagination server side params
+ * @param serverParams - pagination server side params
  * @param {{pagination: boolean}} options
  * @returns {any}
  */
 export function paginationPublish(collection: Mongo.Collection<any> | any,
     params: any,
-    serverparams?: any,
+    serverParams?: any,
     options?: { pagination?: boolean, reactive?: boolean, fields?: {} }): any {
 
-    Logger.debug("paginationPublish: " + collection._name, params, serverparams, options);
+    Logger.debug('paginationPublish: ' + collection._name, params, serverParams, options);
 
-    let _params = paginationParams(params, serverparams);
-    let _options: any = options || {};
-    let _fields = _options.fields || {};
+    const localPaginationParams = paginationParams(params, serverParams);
+    options = options || {};
+    const fields = options.fields || {};
 
     const self: any = this;
 
-    Logger.debug("paginationPublish: " + collection._name, _params);
+    Logger.debug("paginationPublish: " + collection._name, localPaginationParams);
 
 
-    if (params.page == 1 && _.isUndefined(_options.reactive)) {
-        _params['nonReactive'] = true;
-        _options.reactive = true;
+    if (params.page === 1 && helpers.isUndefined(options.reactive)) {
+        localPaginationParams['nonReactive'] = true;
+        options.reactive = true;
     }
 
     const collectionNamePagination = collection._name;
-    const collectionNamePaginationCount = collection._name + "PaginationCount";
+    const collectionNamePaginationCount = collection._name + 'PaginationCount';
 
-    if (!_options.reactive) {
+    if (!options.reactive) {
         Logger.error(`nonReactive: sub_${self._subscriptionId}`);
         collection
-            .find(_params.selector, _params.options, _fields)
-            .forEach(u => {
+            .find(localPaginationParams.selector, localPaginationParams.options, fields)
+            .forEach( (u: any) => {
                 self.added(collectionNamePagination, u._id, u);
                 self.changed(collectionNamePagination, u._id, { [`sub_${self._subscriptionId}`]: 1 });
             });
-        self.added(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count: collection.find(_params.selector).count() });
+        self.added(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count: collection.find(localPaginationParams.selector).count() });
     } else {
         Logger.error(`Reactive: sub_${self._subscriptionId}`);
         const handle = collection
-            .find(_params.selector, _params.options, _fields)
+            .find(localPaginationParams.selector, localPaginationParams.options, fields)
             .observeChanges({
-                added(id, fields) {
+                added(id: string, fields: any) {
                     self.added(collectionNamePagination, id, fields);
                     self.changed(collectionNamePagination, id, { [`sub_${self._subscriptionId}`]: 1 });
-                    let _count = collection.find(_params.selector).count();
-                    self.added(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count: _count });
-                    self.changed(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count: _count });
+                    const count = collection.find(localPaginationParams.selector).count();
+                    self.added(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count });
+                    self.changed(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count });
                 },
-                changed(id, fields) {
+                changed(id: string, fields: any) {
                     self.changed(collectionNamePagination, id, fields);
-                    self.changed(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count: collection.find(_params.selector).count() });
+                    self.changed(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count: collection.find(localPaginationParams.selector).count() });
                 },
-                removed(id) {
+                removed(id: any) {
                     self.removed(collectionNamePagination, id);
                 }
             });

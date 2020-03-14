@@ -2,8 +2,18 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+declare var __meteor_runtime_config__: any;
 export const environment = {
-  production: false
+  production: false,
+  analyticsSettings: {
+    'Google Analytics': {
+      'trackingId': 'UA-123-1'
+    }
+  },
+  'recaptcha': {
+    'sitekey': ''
+  },
+  meteor: __meteor_runtime_config__
 };
 
 /*

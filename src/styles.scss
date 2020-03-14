@@ -1,1 +1,51 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$bookstorage-primary: mat-palette($mat-blue-grey);
+$bookstorage-accent: mat-palette($mat-amber, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$bookstorage-warn: mat-palette($mat-deep-orange);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$bookstorage-theme: mat-dark-theme($bookstorage-primary, $bookstorage-accent, $bookstorage-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($bookstorage-theme);
+
 /* You can add global styles to this file, and also import other style files */
+
+$fa-font-path: 'assets/fontawesome/webfonts/';
+@import 'assets/fontawesome/scss/fontawesome';
+@import 'assets/fontawesome/scss/duotone';
+@import 'assets/fontawesome/scss/solid';
+@import 'assets/fontawesome/scss/regular';
+@import 'assets/fontawesome/scss/light';
+@import 'assets/fontawesome/scss/brands';
+
+
+@import "../node_modules/@clr/ui/src/dark-theme"; // Dark theme variables
+// @import "../node_modules/@clr/ui/src/main"; // Dark theme variables
+
+// @import "../node_modules/@clr/ui/src/utils/theme.dark.clarity"; // Dark theme variables
+
+// Your Application Theme File
+// @import "./theme.scss";
+
+// Clarity Component SCSS
+// @import "../node_modules/@clr/ui/src/utils/components.clarity";
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

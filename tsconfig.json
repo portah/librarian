@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -11,6 +11,11 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
+
+    "skipLibCheck": true,
+    "stripInternal": true,
+    "noImplicitAny": false,
+
     "typeRoots": [
       "node_modules/@types"
     ],

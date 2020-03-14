@@ -3,52 +3,87 @@ import { Meteor } from 'meteor/meteor';
 
 import { Publisher } from './publishers';
 
+import { paginationPublish } from '../modules/pagination';
+import { Logger } from '../modules/logger';
+
 export interface NLPTerm {
-  term: string;
-  tf?: number;
-  idf?: number
-  tfidf?: number;
+    term: string;
+    tf?: number;
+    idf?: number
+    tfidf?: number;
 }
 
 export interface BookFile {
-  root?: string;
-  base?: string;
-  name: string;
-  dir?: string;
-  ext: string;
-  size: number;
-  atimeMs: number;
-  ctimeMs: number;
-  mtimeMs: number;
-  birthtimeMs: number;
-  ostrioId?: string;
+    root?: string;
+    base?: string;
+    name: string;
+    dir?: string;
+    ext: string;
+    size: number;
+    atimeMs: number;
+    ctimeMs: number;
+    mtimeMs: number;
+    birthtimeMs: number;
+    ostrioId?: string;
 }
 
 export interface Book {
-  _id?: string;
-  title?: string;
-  numPages?: number;
-  authors?: string[];
-  description?: string;
-  outline?: any;
+    _id?: string;
+    title?: string;
+    numPages?: number;
+    authors?: string[];
+    description?: string;
+    outline?: any;
 
-  isbn?: string;
-  isbn10?: string;
-  isbn13?: string;
+    isbn?: string;
+    isbn10?: string;
+    isbn13?: string;
 
-  imageBase64?: string;
+    imageBase64?: string;
 
-  url: string;
+    url: string;
 
-  nlpTags?: string[];
-  nlpTerms?: NLPTerm[];
+    nlpTags?: string[];
+    nlpTerms?: NLPTerm[];
 
-  publisher?: Publisher;
-  fileInfo: BookFile;
+    publisher?: Publisher;
+    fileInfo: BookFile;
 }
 
 export const Books = new Mongo.Collection<Book>('books');
 
 Meteor.startup(() => {
-  Books._ensureIndex({ title: 1, base: 1, name: 1 });
+    Books._ensureIndex({ title: 1, base: 1, name: 1 });
 });
+
+
+Books.deny({
+    insert: () => true,
+    update: () => true,
+    remove: () => true
+});
+
+/**
+ * exclude invoices from publishing
+ * @params params = {{book: number}}
+ */
+const fields = { invoice: 0 };
+
+Meteor.publish('books/list', function(params?) {
+
+    params = {
+        filtering: {},
+        ...params
+    };
+
+    Logger.debug('books/list: ', params);
+
+    // if (!Roles.userIsInRole(Meteor.userId(), ['admin', 'billing'], Roles.GLOBAL_GROUP)) {
+    //     params.filtering["userId"] = Meteor.userId();
+    // }
+
+    paginationPublish.bind(this, Books, params, {}, { fields: fields })();
+    return this.ready();
+});
+
+

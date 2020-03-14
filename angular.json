@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1, 
+  "version": 1,
   "newProjectRoot": "projects",
   "projects": {
     "bookstorage": {
@@ -21,16 +21,23 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "./tsconfig.app.json",
             "aot": true,
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              { "glob": "**/*", "input": "src/assets", "output": "/assets" },
+              "src/favicon.ico"
             ],
             "styles": [
+              "./node_modules/@clr/icons/clr-icons.min.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js",
+              "node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js",
+              "src/environments/client.config.js",
+              "./meteor-client.js",
+              "node_modules/@clr/icons/clr-icons.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -123,6 +130,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "bookstorage"
+    }
+  },
+  "defaultProject": "bookstorage",
+  "cli": {
+    "analytics": "a39d89aa-8c07-4121-8f44-fef037963b14"
+  }
 }
