@@ -23,10 +23,10 @@ export class Tracking {
      * @param track
      * @param id
      */
-    protected trackedId(track: Object, id) {
+    protected trackedId(track: {}, id: any) {
         if (!id) { return; }
 
-        let st = this.__disposables.find(d => d.id === id);
+        const st = this.__disposables.find(d => d.id === id);
         if (st) {
             st.track[st.dispose]();
             this.__disposables = this.__disposables.filter( e => e.id !== id);
@@ -41,7 +41,7 @@ export class Tracking {
     /**
      *  Cleanup all tracked data.
      */
-    public cleanup(){
+    public cleanup() {
         if (this.__disposables) {
             this.__disposables.forEach(d => d.track[d.dispose]());
         }
@@ -50,40 +50,38 @@ export class Tracking {
 
     /**
      *
-     * @param track
-     * @returns {{track: any; dispose: string}}
      */
-    private getDispose(track) {
-        let dispose = {
+    private getDispose(track: any) {
+        const dispose = {
             track,
-            dispose: ""
+            dispose: ''
         };
         if (track instanceof Subscription) {
-            dispose.dispose = "unsubscribe";
+            dispose.dispose = 'unsubscribe';
         } else
 
         if (track instanceof Subscriber ) {
-          dispose.dispose = "unsubscribe";
+          dispose.dispose = 'unsubscribe';
         } else
 
-        if (typeof track["stop"] === "function" && track['subscriptionId']) {
-            dispose.dispose = "stop";
+        if (typeof track['stop'] === 'function' && track['subscriptionId']) {
+            dispose.dispose = 'stop';
         } else
 
-        if (typeof track["stop"] === "function" && track instanceof Tracker.Computation) {
-            dispose.dispose = "stop";
+        if (typeof track['stop'] === 'function' && track instanceof Tracker.Computation) {
+            dispose.dispose = 'stop';
         } else
 
-        if (typeof track["destroy"] === "function") {
-            dispose.dispose = "destroy";
+        if (typeof track['destroy'] === 'function') {
+            dispose.dispose = 'destroy';
         } else
 
-        if (typeof track["dispose"] === "function") {
-            dispose.dispose = "dispose";
+        if (typeof track['dispose'] === 'function') {
+            dispose.dispose = 'dispose';
         } else {
-          dispose.dispose = "unsubscribe";
+          dispose.dispose = 'unsubscribe';
             console.log('track', track, track instanceof Subscription, track instanceof Subscriber);
-            // throw new Error("Could not find a method that would destroy an object");
+            // throw new Error('Could not find a method that would destroy an object');
         }
 
         return dispose;
