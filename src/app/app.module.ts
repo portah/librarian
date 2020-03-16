@@ -9,8 +9,12 @@ import { NgPipesModule, ReversePipe } from 'ngx-pipes';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BookStorageLayoutComponent } from './BookStorageLayout/BookStorageLayout.component';
+
 import { BooksService } from './books.service';
+
+import { BookStorageLayoutComponent } from './BookStorageLayout/BookStorageLayout.component';
+import { BookShelfViewComponent } from './BookShelfView/BookShelfView.component';
+import { BookViewComponent } from './BookView/BookView.component';
 
 export const BreakPointsProvider = {
    provide: BREAKPOINTS,
@@ -21,7 +25,9 @@ export const BreakPointsProvider = {
 @NgModule({
    declarations: [
       AppComponent,
-      BookStorageLayoutComponent
+      BookStorageLayoutComponent,
+      BookShelfViewComponent,
+      BookViewComponent
    ],
    imports: [
       BrowserModule,
@@ -33,8 +39,8 @@ export const BreakPointsProvider = {
    ],
    providers: [
       BooksService,
-      ReversePipe
-      // BreakPointsProvider
+      ReversePipe,
+      BreakPointsProvider
    ],
    bootstrap: [
       AppComponent

@@ -1,0 +1,17 @@
+<div fxLayout="row wrap" fxLayoutGap="10px" fxLayoutAlign="start start">
+  <a *ngFor="let book of books; let i=index" routerLink="/book/{{book._id}}" class="card clickable" style="width: 130px;">
+    <!-- <div class="card-header">
+            {{book.title| shorten: 8: '...'}}
+          </div> -->
+    <div class="card-img" style="height: 190px;">
+      <img [src]="book.imageBase64" fxFill>
+    </div>
+    <!-- <div class="card-block"> -->
+    <!-- <div class="card-text"> -->
+    <!-- {{book.title | shorten: 8: '...'}} -->
+    <!-- </div> -->
+    <!-- </div> -->
+  </a>
+  <!-- <router-outlet></router-outlet> -->
+  <!-- <div fxFlex>&nbsp;&nbsp;</div> -->
+</div>
