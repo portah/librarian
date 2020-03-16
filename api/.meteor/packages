@@ -5,7 +5,6 @@
 # but you can also edit it by hand.
 
 meteor-base@1.4.0             # Packages every Meteor app needs to have
-mobile-experience@1.0.5       # Packages for a great mobile UX
 mongo@1.8.0                   # The database Meteor supports right now
 session@1.2.0                 # Client-side reactive dictionary for your app
 reactive-var@1.0.11            # Reactive variable for tracker
@@ -16,23 +15,22 @@ standard-minifier-js@2.6.0    # JS minifier run for production mode
 es5-shim@4.8.0                # ECMAScript 5 compatibility for older browsers
 ecmascript@0.14.2              # Enable ECMAScript2015+ syntax in app code
 typescript@3.7.5              # Enable TypeScript syntax in .ts and .tsx modules
-shell-server@0.4.0            # Server-side component of the `meteor shell` command
 
 ###static-html             # Define static page content in .html files not needed for angular
 
 check@1.3.1
 email@1.2.3
-accounts-password@1.5.1
-accounts-google@1.3.2
+accounts-password@1.5.2
+accounts-google@1.3.3
 
-alanning:roles
-ejson@1.1.0
-jparker:gravatar
-zeroasterisk:throttle
-zeroasterisk:throttle-accounts
+#alanning:roles
+ejson@1.1.1
+#jparker:gravatar
+#zeroasterisk:throttle
+#zeroasterisk:throttle-accounts
 ostrio:files
 random@1.1.0
-tmeasday:publish-counts
+#tmeasday:publish-counts
 
 ###zuuk:stale-session - jQuery depend
-http
+http@1.4.2
