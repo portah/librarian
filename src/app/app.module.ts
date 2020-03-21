@@ -7,6 +7,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NgPipesModule, ReversePipe } from 'ngx-pipes';
 
+import {
+   FileManagerModule,
+   NavigationPaneService,
+   ToolbarService,
+   DetailsViewService
+} from '@syncfusion/ej2-angular-filemanager';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -15,6 +22,7 @@ import { BooksService } from './books.service';
 import { BookStorageLayoutComponent } from './BookStorageLayout/BookStorageLayout.component';
 import { BookShelfViewComponent } from './BookShelfView/BookShelfView.component';
 import { BookViewComponent } from './BookView/BookView.component';
+import { BookFileManagerComponent } from './BookFileManager/BookFileManager.component';
 
 export const BreakPointsProvider = {
    provide: BREAKPOINTS,
@@ -27,7 +35,8 @@ export const BreakPointsProvider = {
       AppComponent,
       BookStorageLayoutComponent,
       BookShelfViewComponent,
-      BookViewComponent
+      BookViewComponent,
+      BookFileManagerComponent
    ],
    imports: [
       BrowserModule,
@@ -35,12 +44,16 @@ export const BreakPointsProvider = {
       ClarityModule,
       BrowserAnimationsModule,
       FlexLayoutModule,
-      NgPipesModule
+      NgPipesModule,
+      FileManagerModule
    ],
    providers: [
       BooksService,
       ReversePipe,
-      BreakPointsProvider
+      BreakPointsProvider,
+      NavigationPaneService,
+      ToolbarService,
+      DetailsViewService
    ],
    bootstrap: [
       AppComponent

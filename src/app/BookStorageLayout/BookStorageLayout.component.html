@@ -34,17 +34,17 @@
   <nav class="subnav" [clr-nav-level]="1">
     <ul class="nav">
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/']" [queryParams]="{view: 'cards'}">
+        <a class="nav-link" [routerLink]="['/bookshelf']" [queryParams]="{view: 'cards'}">
           <clr-icon shape="view-cards"></clr-icon>
         </a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/']" [queryParams]="{view: 'list'}">
+        <a class="nav-link" [routerLink]="['/bookshelf']" [queryParams]="{view: 'list'}">
           <clr-icon shape="view-list"></clr-icon>
         </a>
       </li>
       <li class="nav-item" routerLinkActive="active">
-        <a class="nav-link" [routerLink]="['/']" [queryParams]="{view: 'details'}">
+        <a class="nav-link" [routerLink]="['/bookshelf']" [queryParams]="{view: 'details'}">
           <clr-icon shape="details"></clr-icon>
         </a>
       </li>
@@ -55,26 +55,28 @@
 
     <clr-vertical-nav [clrVerticalNavCollapsible]="true" [(clrVerticalNavCollapsed)]="collapsed" class="nav-trigger--bottom" [clr-nav-level]="2">
 
-      <a clrVerticalNavLink routerLinkActive="active" routerLink="/" preserveQueryParams>
-        <i class="fad fa-home" clrVerticalNavIcon></i>
-        <!-- <clr-icon shape="home" clrVerticalNavIcon></clr-icon> -->
+      <a clrVerticalNavLink routerLinkActive="active" routerLink="/bookshelf" preserveQueryParams>
+        <!-- <i class="fad fa-home" clrVerticalNavIcon></i> -->
+        <clr-icon shape="home" clrVerticalNavIcon></clr-icon>
         Library
       </a>
-      <clr-vertical-nav-group routerLinkActive="active" clrVerticalNavGroupExpanded='true'>
-        <i class="fad fa-folders" clrVerticalNavIcon></i>
-        <!-- <clr-icon shape="folder-open" clrVerticalNavIcon></clr-icon> -->
+      <a clrVerticalNavLink routerLinkActive="active" routerLink="/filemanager" preserveQueryParams>
+        <clr-icon shape="folder-open" clrVerticalNavIcon></clr-icon>
         Folders
-        <clr-vertical-nav-group-children>
-          <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active">
-            <!-- <i class="fad fa-file-pdf" clrVerticalNavIcon></i> -->
-            pdfs
-          </a>
-          <a clrVerticalNavLink routerLink="./normal/snorlax" routerLinkActive="active">
-            <!-- <i class="fad fa-bookmark" clrVerticalNavIcon></i> -->
-            epubs
-          </a>
-        </clr-vertical-nav-group-children>
-      </clr-vertical-nav-group>
+      </a>
+      <!-- <clr-vertical-nav-group routerLinkActive="active" clrVerticalNavGroupExpanded='true'> -->
+        <!-- <i class="fad fa-folders" clrVerticalNavIcon></i> -->
+        <!-- <clr-icon shape="folder-open" clrVerticalNavIcon></clr-icon> -->
+        <!-- Folders -->
+        <!-- <clr-vertical-nav-group-children> -->
+          <!-- <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active"> -->
+            <!-- pdfs -->
+          <!-- </a> -->
+          <!-- <a clrVerticalNavLink routerLink="./normal/snorlax" routerLinkActive="active"> -->
+            <!-- epubs -->
+          <!-- </a> -->
+        <!-- </clr-vertical-nav-group-children> -->
+      <!-- </clr-vertical-nav-group> -->
       <clr-vertical-nav-group routerLinkActive="active" clrVerticalNavGroupExpanded='true'>
         <!-- <clr-icon shape="library" clrVerticalNavIcon></clr-icon> -->
         <i class="fad fa-swatchbook" clrVerticalNavIcon></i>
@@ -108,7 +110,7 @@
       </a>
     </clr-vertical-nav>
 
-    <div class="content-area" fxLayout="column" fxLayoutAlign="start start">
+    <div class="content-area">
       <router-outlet></router-outlet>
     </div>
 

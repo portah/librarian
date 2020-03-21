@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
+
 import { promises as fs } from 'fs';
 
 import { of as observableOf, Observable, Subscriber, from as observableFrom } from 'rxjs';
@@ -14,6 +16,9 @@ import { Book, BookFile, NLPTerm, Books } from '/imports/api/books';
 
 import { Logger, walk, ScrapePDFFile } from '/imports/modules';
 import { PDF as pdfParser } from '/imports/modules/pdfparse';
+
+
+import '/imports/api/fileManager';
 
 Meteor.startup(async () => {
 
@@ -126,5 +131,8 @@ Meteor.startup(async () => {
     // const fileName = '/Users/porter/Books/rar2/Wiley.Lean.Impact.How.to.Innovate.for.Radically.Greater.Social.Good.1119506603.pdf';
 
     // pdf(await fs.readFile(fileName)).then((data: any) => {
+
+
+
 
 });
