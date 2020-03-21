@@ -5,7 +5,7 @@
 # but you can also edit it by hand.
 
 meteor-base@1.4.0             # Packages every Meteor app needs to have
-mongo@1.8.0                   # The database Meteor supports right now
+mongo@1.9.0                   # The database Meteor supports right now
 session@1.2.0                 # Client-side reactive dictionary for your app
 reactive-var@1.0.11            # Reactive variable for tracker
 tracker@1.2.0                 # Meteor's client-side reactive programming library
@@ -20,7 +20,7 @@ typescript@3.7.5              # Enable TypeScript syntax in .ts and .tsx modules
 
 check@1.3.1
 email@1.2.3
-accounts-password@1.5.2
+accounts-password@1.6.0
 accounts-google@1.3.3
 
 #alanning:roles
@@ -29,7 +29,7 @@ ejson@1.1.1
 #zeroasterisk:throttle
 #zeroasterisk:throttle-accounts
 ostrio:files
-random@1.1.0
+random@1.2.0
 #tmeasday:publish-counts
 
 ###zuuk:stale-session - jQuery depend
