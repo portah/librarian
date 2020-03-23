@@ -6,6 +6,10 @@ import { promises as fs } from 'fs';
 import { of as observableOf, Observable, Subscriber, from as observableFrom } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 
+const cors = require('cors');
+import express from 'express';
+
+import * as bodyParser from 'body-parser';
 import * as osmosis from 'osmosis';
 
 // import { TfIdf, PorterStemmer, AggressiveTokenizer, LevenshteinDistance } from 'natural';
@@ -17,13 +21,35 @@ import { Book, BookFile, NLPTerm, Books } from '/imports/api/books';
 import { Logger, walk, ScrapePDFFile } from '/imports/modules';
 import { PDF as pdfParser } from '/imports/modules/pdfparse';
 
+import { FileManagerOperations, contentRootPathGlobal } from '/imports/api/fileManager/operations';
+// import '/imports/api/fileManager';
 
-import '/imports/api/fileManager';
+
+async function debugMiddle(req: any, res: any, next: any) {
+    Logger.info(`[BooksStorage]: ${req.method}, ${req.url}`);
+    Logger.debug('[BooksStorage] Body:', req.body);
+    return next();
+}
 
 Meteor.startup(async () => {
 
 
-    const baseFolder = Meteor.settings.walkingDirs[0];
+    if (Meteor.settings.cors) {
+        WebApp.rawConnectHandlers.use((req: any, res: any, next: any) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Headers', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+            res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Range, Content-Type');
+            return next();
+        });
+    }
+
+    if (Meteor.settings.cors_package) {
+        WebApp.rawConnectHandlers.use(cors());
+    }
+
+
+    const baseFolder = Meteor.settings.walkingDirs && Meteor.settings.walkingDirs.length > 0 ? Meteor.settings.walkingDirs[0] : '';
 
 
     // Make the user agent that of a browser (Google Chrome on Windows)
@@ -105,13 +131,13 @@ Meteor.startup(async () => {
                 if (fileInfo.ext === '.pdf') {
                     return observableFrom(pdfParser(file))
                         .pipe(
-                            map((pdfData: any) => ({ pdfBook: (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo}))
-                            );
+                            map((pdfData: any) => ({ pdfBook: (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo }))
+                        );
                 }
-                return observableOf({pdfBook: null, fileInfo});
+                return observableOf({ pdfBook: null, fileInfo });
             })
         )
-        .subscribe( ( {pdfBook, fileInfo})  => {
+        .subscribe(({ pdfBook, fileInfo }) => {
             if (!pdfBook) {
                 Logger.error('Unsupported extension:', fileInfo.ext);
                 return;
@@ -133,6 +159,23 @@ Meteor.startup(async () => {
     // pdf(await fs.readFile(fileName)).then((data: any) => {
 
 
+
+
+    const app = express();
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
+    app.use(cors());
+    const fileManager = new FileManagerOperations(contentRootPathGlobal);
+    app.post('/operations', debugMiddle, async (req, res, next) => {
+        // req.setTimeout(0);
+        res.setHeader('Content-Type', 'application/json');
+        res.json(
+            JSON.stringify(
+                await fileManager.fileManagerRead(req.body)
+            )
+        );
+    });
+    WebApp.connectHandlers.use('/filemanager', app);
 
 
 });

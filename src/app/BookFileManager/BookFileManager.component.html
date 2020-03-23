@@ -5,5 +5,8 @@
     showThumbnail='false'
     [detailsViewSettings]='viewSettings'
     (fileSelect)='onFileSelect($event)'
+    (beforeDownload)='onTestEvents($event)'
+    (beforeSend)='onTestEvents($event)'
+
 >
 </ejs-filemanager>

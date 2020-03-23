@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FileSelectEventArgs } from '@syncfusion/ej2-filemanager';
+import { UploadingEventArgs } from '@syncfusion/ej2-inputs';
+import { getUniqueID } from '@syncfusion/ej2-base';
 
 import { environment } from '../../environments/environment';
 
@@ -10,7 +12,7 @@ import { environment } from '../../environments/environment';
 })
 export class BookFileManagerComponent implements OnInit {
 
-  public hostUrl = `${environment.meteor.ROOT_URL}/filemanager`;
+  public hostUrl = `${environment.meteor.ROOT_URL}/filemanager/operations`;
 
   public ajaxSettings: object = {
     url: this.hostUrl + ''
@@ -32,10 +34,37 @@ export class BookFileManagerComponent implements OnInit {
 
   constructor() { }
 
-  onFileSelect(args: FileSelectEventArgs) {
-    console.log(args.fileDetails.name + " has been " + args.action + "ed");
+  public onFileSelect(args: FileSelectEventArgs) {
+    // @ts-ignore
+    console.log(`${args.fileDetails.name} has been ${args.action} ed`);
     console.log(args);
   }
+
+  public onTestEvents(args) {
+    console.log('onTestEvents', args, args.ajaxSettings);
+    if(args.ajaxSettings.data) {
+      const data = JSON.parse(args.ajaxSettings.data);
+      if (Array.isArray(data)) {
+
+      } else {
+        data.token = 'Token!';
+        args.ajaxSettings.data = JSON.stringify(data);
+      }
+    }
+    // if (args.action === '') []
+
+  }
+
+  public onUploadBegin(args: UploadingEventArgs) {
+    console.log(args);
+    // check whether the file is uploading from paste.
+    if (args.fileData.fileSource === 'paste') {
+      const newName: string = getUniqueID(args.fileData.name.substring(0, args.fileData.name.lastIndexOf('.'))) + '.png';
+      console.log(newName);
+      // args.customFormData = [{ fileName: newName }];
+    }
+  }
+
   ngOnInit() {
   }
 
