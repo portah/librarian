@@ -291,7 +291,7 @@ export class FileManagerOperations {
      * @param searchString
      * @param fileList
      */
-    public async fromDir(startPath: string, searchString: any, caseSensitive: boolean, fileList: any[]): any[] {
+    public async fromDir(startPath: string, searchString: any, caseSensitive: boolean, fileList: any[]): Promise<any[]> {
 
         const files = await this.getFiles(startPath);
 
@@ -303,7 +303,7 @@ export class FileManagerOperations {
                     const cwd = await this.getFileStats(filename);
                     fileList.push(cwd);
                 }
-                await this.fromDir(filename, searchString, caseSensitive, fileList); //recurse
+                await this.fromDir(filename, searchString, caseSensitive, fileList); // recurse
             } else if (this.checkForSearchResult(file, searchString, caseSensitive)) {
 
                 const cwd = await this.getFileStats(filename);

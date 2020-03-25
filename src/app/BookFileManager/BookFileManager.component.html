@@ -1,12 +1,13 @@
-<ejs-filemanager id='ejsFileManager'
+<ejs-filemanager #ejsFileManager id='ejsFileManager'
     [ajaxSettings]='ajaxSettings'
     [view]='view'
     height ='100%'
     showThumbnail='false'
     [detailsViewSettings]='viewSettings'
     (fileSelect)='onFileSelect($event)'
-    (beforeDownload)='onTestEvents($event)'
+    (beforeDownload)='onDownloadEvent($event)'
     (beforeSend)='onTestEvents($event)'
+    (toolbarClick)='onTestEvents($event)'
 
 >
 </ejs-filemanager>

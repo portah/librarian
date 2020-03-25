@@ -5,7 +5,6 @@
         "api": "ROOT_URL=http://localhost:3030/ MONGO_URL=mongodb://localhost:27017/bookstorage meteor --port 3030 --settings private/settings.json --raw-logs|./node_modules/bunyan/bin/bunyan -L",
         "meteor:old": "ROOT_URL= MONGO_URL=mongodb://localhost:27017/bookstorage meteor --port 3030 --settings private/settings.json --production",
         "build": "AOT=1 ROLLUP=1 meteor build ../api-build",
-        "start": "meteor run",
         "test": "meteor test --once --driver-package meteortesting:mocha",
         "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
         "visualize": "meteor --production --extra-packages bundle-visualizer"

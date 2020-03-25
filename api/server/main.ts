@@ -22,6 +22,7 @@ import { Logger, walk, ScrapePDFFile } from '/imports/modules';
 import { PDF as pdfParser } from '/imports/modules/pdfparse';
 
 import { FileManagerOperations, contentRootPathGlobal } from '/imports/api/fileManager/operations';
+import { download } from '/imports/api/fileManager/download';
 // import '/imports/api/fileManager';
 
 
@@ -174,6 +175,9 @@ Meteor.startup(async () => {
                 await fileManager.fileManagerRead(req.body)
             )
         );
+    });
+    app.post('/download', debugMiddle, async (req, res, next) => {
+        download(req, res, contentRootPathGlobal);
     });
     WebApp.connectHandlers.use('/filemanager', app);
 

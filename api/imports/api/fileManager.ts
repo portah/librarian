@@ -16,7 +16,6 @@ const fs = require('fs');
 
 // let yargs = require('yargs');
 import express from 'express';
-const cors = require('cors');
 
 import * as bodyParser from 'body-parser';
 
@@ -820,6 +819,7 @@ app.post('/Download', function (req, res) {
     }
 });
 */
+
 /**
  * Handles the read request
  */
@@ -1067,24 +1067,10 @@ async function fileManagerRead(req: any, res: any) {
 
 Meteor.startup(async () => {
 
-    // if(Meteor.settings['cors']) {
-    // WebApp.rawConnectHandlers.use((req, res, next) => {
-    //     res.setHeader("Access-Control-Allow-Origin", "*");
-    //     res.setHeader('Access-Control-Allow-Headers', "*");
-    //     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    //     res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Range, Content-Type');
-    //     return next();
-    // });
-    // }
-
     async function debugMiddle(req: any, res: any, next) {
         Logger.debug('[Books fileManager]:', req.method, req.url, req.body, req.user);
         return next();
     }
-
-    // if(Meteor.settings['cors_package']) {
-    WebApp.rawConnectHandlers.use(cors());
-    // }
 
     const app = express();
     app.use(bodyParser.urlencoded({ extended: true }));

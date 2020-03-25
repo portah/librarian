@@ -1,5 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { FileSelectEventArgs } from '@syncfusion/ej2-filemanager';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FileSelectEventArgs, AjaxSettingsModel, BeforeDownloadEventArgs } from '@syncfusion/ej2-filemanager';
+import {
+  ToolbarService,
+  FileManagerComponent
+} from '@syncfusion/ej2-angular-filemanager';
+
 import { UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { getUniqueID } from '@syncfusion/ej2-base';
 
@@ -12,10 +17,13 @@ import { environment } from '../../environments/environment';
 })
 export class BookFileManagerComponent implements OnInit {
 
-  public hostUrl = `${environment.meteor.ROOT_URL}/filemanager/operations`;
+  @ViewChild('ejsFileManager', {static: true}) public fileManager;
 
-  public ajaxSettings: object = {
-    url: this.hostUrl + ''
+  public hostUrl = `${environment.meteor.ROOT_URL}/filemanager/`;
+
+  public ajaxSettings: AjaxSettingsModel = {
+    url: this.hostUrl + 'operations',
+    downloadUrl: this.hostUrl + 'download'
   };
 
   public viewSettings = {
@@ -32,7 +40,10 @@ export class BookFileManagerComponent implements OnInit {
   public view: string = 'Details';
   // { field: 'fmmodified', headerText: 'DateModified', minWidth: 120, width: 220, template: '${ dateModified }' },
 
-  constructor() { }
+  constructor() {
+    console.log(ToolbarService);
+    console.log(this.fileManager);
+   }
 
   public onFileSelect(args: FileSelectEventArgs) {
     // @ts-ignore
@@ -40,9 +51,15 @@ export class BookFileManagerComponent implements OnInit {
     console.log(args);
   }
 
+  public onDownloadEvent(args: BeforeDownloadEventArgs) {
+    console.log('onDownloadEvents', args);
+    args.data['token'] = 'Token!';
+    // args.cancel = true;
+  }
+
   public onTestEvents(args) {
     console.log('onTestEvents', args, args.ajaxSettings);
-    if(args.ajaxSettings.data) {
+    if (args.ajaxSettings?.data) {
       const data = JSON.parse(args.ajaxSettings.data);
       if (Array.isArray(data)) {
 
@@ -51,8 +68,6 @@ export class BookFileManagerComponent implements OnInit {
         args.ajaxSettings.data = JSON.stringify(data);
       }
     }
-    // if (args.action === '') []
-
   }
 
   public onUploadBegin(args: UploadingEventArgs) {
@@ -66,6 +81,7 @@ export class BookFileManagerComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.fileManager);
   }
 
 }
