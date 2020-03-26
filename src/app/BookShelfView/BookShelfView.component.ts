@@ -15,14 +15,14 @@ export class BookShelfViewComponent extends Tracking implements OnInit {
     books: any[] = [];
 
     constructor(
-        public bookService: BooksService,
+        public booksService: BooksService,
         private zone: NgZone
     ) {
         super();
     }
 
     ngOnInit() {
-        this.bookService.booksList$().subscribe((d: any[]) => {
+        this.booksService.booksList$().subscribe((d: any[]) => {
             this.zone.run(() => {
                 this.books = d;
             });

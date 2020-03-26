@@ -14,6 +14,22 @@ import {
    DetailsViewService
 } from '@syncfusion/ej2-angular-filemanager';
 
+import { ButtonModule, CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
+
+import { ToolbarModule } from '@syncfusion/ej2-angular-navigations';
+
+import { DialogModule } from '@syncfusion/ej2-angular-popups';
+
+import { PdfViewerModule } from '@syncfusion/ej2-angular-pdfviewer';
+
+import {
+   PdfViewerComponent, LinkAnnotationService, BookmarkViewService, MagnificationService, ThumbnailViewService,
+   NavigationService, TextSearchService, TextSelectionService, PrintService, AnnotationService, FormFieldsService
+} from '@syncfusion/ej2-angular-pdfviewer';
+
+
+import { HttpClientModule } from '@angular/common/http';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -45,15 +61,31 @@ export const BreakPointsProvider = {
       BrowserAnimationsModule,
       FlexLayoutModule,
       NgPipesModule,
-      FileManagerModule
-   ],
+      FileManagerModule,
+      HttpClientModule,
+      PdfViewerModule,
+      // PdfViewerComponent,
+      DialogModule,
+      ToolbarModule,
+      ButtonModule,
+      CheckBoxModule   ],
    providers: [
       BooksService,
       ReversePipe,
       BreakPointsProvider,
       NavigationPaneService,
       ToolbarService,
-      DetailsViewService
+      DetailsViewService,
+      LinkAnnotationService,
+      BookmarkViewService,
+      MagnificationService,
+      ThumbnailViewService,
+      NavigationService,
+      TextSearchService,
+      TextSelectionService,
+      PrintService,
+      AnnotationService,
+      FormFieldsService
    ],
    bootstrap: [
       AppComponent

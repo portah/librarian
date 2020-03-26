@@ -25,15 +25,16 @@
             "aot": true,
             "assets": [
               { "glob": "**/*", "input": "src/assets", "output": "/assets" },
-              "src/favicon.ico"
+              "src/favicon.ico",
+              "src/files",
+              "src/pdflib"
             ],
             "styles": [
               "./node_modules/@clr/icons/clr-icons.min.css",
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js",
-              "node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js",
+              "src/pdflib/webviewer.min.js",
               "src/environments/client.config.js",
               "./meteor-client.js",
               "node_modules/@clr/icons/clr-icons.min.js"

@@ -22,12 +22,13 @@ import { Logger, walk, ScrapePDFFile } from '/imports/modules';
 import { PDF as pdfParser } from '/imports/modules/pdfparse';
 
 import { FileManagerOperations, contentRootPathGlobal } from '/imports/api/fileManager/operations';
-import { download } from '/imports/api/fileManager/download';
+import { download, downloadPdf } from '/imports/api/fileManager/download';
 // import '/imports/api/fileManager';
 
 
 async function debugMiddle(req: any, res: any, next: any) {
     Logger.info(`[BooksStorage]: ${req.method}, ${req.url}`);
+    Logger.debug('[BooksStorage] Headers:', req.headers);
     Logger.debug('[BooksStorage] Body:', req.body);
     return next();
 }
@@ -165,7 +166,7 @@ Meteor.startup(async () => {
     const app = express();
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
-    app.use(cors());
+    // app.use(cors());
     const fileManager = new FileManagerOperations(contentRootPathGlobal);
     app.post('/operations', debugMiddle, async (req, res, next) => {
         // req.setTimeout(0);
@@ -176,10 +177,23 @@ Meteor.startup(async () => {
             )
         );
     });
+    // app.post('/download', debugMiddle, async (req, res, next) => {
+    //     download(req, res, contentRootPathGlobal);
+    // });
     app.post('/download', debugMiddle, async (req, res, next) => {
-        download(req, res, contentRootPathGlobal);
+        download(req, res, contentRootPathGlobal, next);
     });
+
+    const app1 = express();
+    app1.use(bodyParser.urlencoded({ extended: true }));
+    app1.use(bodyParser.json());
+
+    app1.all('*', debugMiddle, async (req, res, next) => {
+       await downloadPdf(req, res, contentRootPathGlobal, next);
+    });
+
+    // app.post('/download/*', debugMiddle);
     WebApp.connectHandlers.use('/filemanager', app);
 
-
+    WebApp.connectHandlers.use('/pdfviewer', app1);
 });
