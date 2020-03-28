@@ -1,9 +1,38 @@
-@import '~@syncfusion/ej2-base/styles/material.css';
-@import '~@syncfusion/ej2-buttons/styles/material.css';
-@import '~@syncfusion/ej2-dropdowns/styles/material.css';
-@import '~@syncfusion/ej2-inputs/styles/material.css';
-@import '~@syncfusion/ej2-navigations/styles/material.css';
-@import '~@syncfusion/ej2-popups/styles/material.css';
-@import '~@syncfusion/ej2-splitbuttons/styles/material.css';
-@import '~@syncfusion/ej2-pdfviewer/styles/material.css';
-@import '~@syncfusion/ej2-notifications/styles/material.css';
+.pdf-nav {
+    background-color: hsl(201, 30%, 13%);
+}
+
+.pages {
+    margin-top: 0.5rem !important;
+    clr-input-container {
+        padding-right: 5px;
+        margin-top: 0 !important;
+    }
+}
+
+.find {
+    margin-top: 0;
+    clr-input-container {
+        // padding-right: 5px;
+        margin-top: 0.5rem !important;
+    }
+}
+
+clr-icon {
+    width: 24px;
+    height: 24px;
+}
+
+clr-select-container, .clr-select-wrapper {
+    margin-top: 0.3rem !important;
+}
+
+pdf-toolbar {
+    display: none !important;
+    width: 0;
+    height: 0;
+}
+
+div#sidebarContainer, div#viewerContainer, .secondaryToolbar {
+    top: 0px !important;
+}

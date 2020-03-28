@@ -17,4 +17,5 @@
     "test.ts",
     "src/**/*.spec.ts"
   ]
+
 }

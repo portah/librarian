@@ -14,21 +14,22 @@ import {
    DetailsViewService
 } from '@syncfusion/ej2-angular-filemanager';
 
-import { ButtonModule, CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
+// import { ButtonModule, CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
 
-import { ToolbarModule } from '@syncfusion/ej2-angular-navigations';
+// import { ToolbarModule } from '@syncfusion/ej2-angular-navigations';
 
-import { DialogModule } from '@syncfusion/ej2-angular-popups';
+// import { DialogModule } from '@syncfusion/ej2-angular-popups';
 
-import { PdfViewerModule } from '@syncfusion/ej2-angular-pdfviewer';
+// import { PdfViewerModule } from '@syncfusion/ej2-angular-pdfviewer';
 
-import {
-   PdfViewerComponent, LinkAnnotationService, BookmarkViewService, MagnificationService, ThumbnailViewService,
-   NavigationService, TextSearchService, TextSelectionService, PrintService, AnnotationService, FormFieldsService
-} from '@syncfusion/ej2-angular-pdfviewer';
+// import {
+//    PdfViewerComponent, LinkAnnotationService, BookmarkViewService, MagnificationService, ThumbnailViewService,
+//    NavigationService, TextSearchService, TextSelectionService, PrintService, AnnotationService, FormFieldsService
+// } from '@syncfusion/ej2-angular-pdfviewer';
 
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
-import { HttpClientModule } from '@angular/common/http';
+// import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -62,13 +63,15 @@ export const BreakPointsProvider = {
       FlexLayoutModule,
       NgPipesModule,
       FileManagerModule,
-      HttpClientModule,
-      PdfViewerModule,
+      NgxExtendedPdfViewerModule,
+      // HttpClientModule,
+      // PdfViewerModule,
       // PdfViewerComponent,
-      DialogModule,
-      ToolbarModule,
-      ButtonModule,
-      CheckBoxModule   ],
+      // DialogModule,
+      // ToolbarModule,
+      // ButtonModule,
+      // CheckBoxModule
+    ],
    providers: [
       BooksService,
       ReversePipe,
@@ -76,16 +79,16 @@ export const BreakPointsProvider = {
       NavigationPaneService,
       ToolbarService,
       DetailsViewService,
-      LinkAnnotationService,
-      BookmarkViewService,
-      MagnificationService,
-      ThumbnailViewService,
-      NavigationService,
-      TextSearchService,
-      TextSelectionService,
-      PrintService,
-      AnnotationService,
-      FormFieldsService
+      // LinkAnnotationService,
+      // BookmarkViewService,
+      // MagnificationService,
+      // ThumbnailViewService,
+      // NavigationService,
+      // TextSearchService,
+      // TextSelectionService,
+      // PrintService,
+      // AnnotationService,
+      // FormFieldsService
    ],
    bootstrap: [
       AppComponent

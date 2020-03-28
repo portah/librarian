@@ -15,7 +15,7 @@
     "build:prod": "cp -f ./src/environments/client.config.prod.js ./src/environments/client.config.js; ng build --prod",
     "copy": "scp -rp ./dist/html/ datirium-art:/meteor/scidap-ui/; rm -rf ./dist",
     "client-bundle": "rm -f ./node_modules/meteor-client.js && meteor-client bundle -s api && mv ./node_modules/meteor-client.js ./",
-    "postinstall": "npm run client-bundle"
+    "postinstall": "test -f ./meteor-client.js || npm run client-bundle"
   },
   "private": true,
   "dependencies": {
@@ -34,19 +34,17 @@
     "@clr/core": "^3.0.0",
     "@clr/icons": "^3.0.0",
     "@clr/ui": "^3.0.0",
-    "@pdftron/webviewer-downloader": "^1.4.2",
     "@syncfusion/ej2-angular-buttons": "^17.4.51",
     "@syncfusion/ej2-angular-filemanager": "^17.4.55",
-    "@syncfusion/ej2-angular-navigations": "^17.4.55",
-    "@syncfusion/ej2-angular-pdfviewer": "^17.4.55",
-    "@syncfusion/ej2-angular-popups": "^17.4.51",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "meteor-client-bundler": "^0.6.0",
     "moment": "^2.24.0",
     "ng-circle-progress": "^1.4.1",
+    "ngx-extended-pdf-viewer": "^2.1.2",
     "ngx-moment": "^3.4.0",
     "ngx-pipes": "^2.5.6",
     "rxjs": "~6.5.4",
+    "screenfull": "^5.0.2",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
   },
@@ -71,5 +69,11 @@
     "ts-node": "~8.3.0",
     "tslint": "~5.18.0",
     "typescript": "~3.7.5"
+  },
+  "depNotNeed": {
+    "@pdftron/webviewer-downloader": "^1.4.2",
+    "@syncfusion/ej2-angular-navigations": "^17.4.55",
+    "@syncfusion/ej2-angular-pdfviewer": "^17.4.55",
+    "@syncfusion/ej2-angular-popups": "^17.4.51"
   }
 }

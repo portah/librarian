@@ -195,5 +195,5 @@ Meteor.startup(async () => {
     // app.post('/download/*', debugMiddle);
     WebApp.connectHandlers.use('/filemanager', app);
 
-    WebApp.connectHandlers.use('/pdfviewer', app1);
+    WebApp.connectHandlers.use('/books', app1);
 });

@@ -26,17 +26,20 @@
             "assets": [
               { "glob": "**/*", "input": "src/assets", "output": "/assets" },
               "src/favicon.ico",
-              "src/files",
-              "src/pdflib"
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                "output": "/assets/"
+              }
             ],
             "styles": [
               "./node_modules/@clr/icons/clr-icons.min.css",
               "src/styles.scss"
             ],
             "scripts": [
-              "src/pdflib/webviewer.min.js",
               "src/environments/client.config.js",
               "./meteor-client.js",
+              "node_modules/@webcomponents/custom-elements/custom-elements.min.js",
               "node_modules/@clr/icons/clr-icons.min.js"
             ]
           },
