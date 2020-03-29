@@ -1,14 +1,18 @@
+/**
+ *  Working With PDF?
+ *  pdfjs
+ */
 import { PDFDocumentProxy, version, getDocument } from 'pdfjs-dist';
-import * as PDFJS from 'pdfjs-dist';
+// import * as PDFJS from 'pdfjs-dist';
 import * as Canvas from 'canvas';
 
 const assert = require('assert').strict;
 
 class NodeCanvasFactory {
     create(width: number, height: number) {
-        assert(width > 0 && height > 0, "Invalid canvas size");
+        assert(width > 0 && height > 0, 'Invalid canvas size');
         const canvas = Canvas.createCanvas(width, height);
-        const context = canvas.getContext("2d");
+        const context = canvas.getContext('2d');
         return {
             canvas,
             context
@@ -16,14 +20,14 @@ class NodeCanvasFactory {
     }
 
     reset(canvasAndContext: any, width: number, height: number) {
-        assert(canvasAndContext.canvas, "Canvas is not specified");
-        assert(width > 0 && height > 0, "Invalid canvas size");
+        assert(canvasAndContext.canvas, 'Canvas is not specified');
+        assert(width > 0 && height > 0, 'Invalid canvas size');
         canvasAndContext.canvas.width = width;
         canvasAndContext.canvas.height = height;
     }
 
     destroy(canvasAndContext: any) {
-        assert(canvasAndContext.canvas, "Canvas is not specified");
+        assert(canvasAndContext.canvas, 'Canvas is not specified');
 
         // Zeroing the width and height cause Firefox to release graphics
         // resources immediately, which can greatly reduce memory consumption.
@@ -35,8 +39,11 @@ class NodeCanvasFactory {
 }
 
 
-async function image_page(pageData: any) {
-    const viewport = pageData.getViewport({ scale: 0.5 });
+async function image_page(pageData: any, scale?: number) {
+    if (!scale) {
+        scale = 0.5;
+    }
+    const viewport = pageData.getViewport({ scale });
     const canvasFactory = new NodeCanvasFactory();
     const canvasAndContext = canvasFactory.create(
         viewport.width,
@@ -56,7 +63,7 @@ async function image_page(pageData: any) {
 
 function render_page(pageData: any) {
     // check documents https://mozilla.github.io/pdf.js/
-    // ret.text = ret.text ? ret.text : "";
+    // ret.text = ret.text ? ret.text : '';
 
     const renderOptions = {
         // replaces all occurrences of whitespace with standard spaces (0x20). The default value is `false`.
@@ -81,8 +88,8 @@ function render_page(pageData: any) {
                 lastY = item.transform[5];
             }
             // let strings = textContent.items.map(item => item.str);
-            // let text = strings.join("\n");
-            // text = text.replace(/[ ]+/ig," ");
+            // let text = strings.join('\n');
+            // text = text.replace(/[ ]+/ig,' ');
             // ret.text = `${ret.text} ${text} \n\n`;
             return text;
         });
@@ -91,14 +98,14 @@ function render_page(pageData: any) {
 const DEFAULT_OPTIONS = {
     pagerender: render_page,
     max: 0,
-    //check https://mozilla.github.io/pdf.js/getting_started/
+    // check https://mozilla.github.io/pdf.js/getting_started/
     version
 };
 
 export async function PDF(dataBuffer: any, options?: any) {
     // var isDebugMode = false;
 
-    let ret: any = {
+    const ret: any = {
         numPages: 0,
         numrender: 0,
         info: null,
@@ -148,7 +155,7 @@ export async function PDF(dataBuffer: any, options?: any) {
         // .catch((err: any) => {
         //     // todo log err using debug
         //     // debugger;
-        //     return "";
+        //     return '';
         // });
 
         ret.text = `${ret.text}\n\n${pageText}`;

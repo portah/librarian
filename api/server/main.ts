@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import { Random } from 'meteor/random';
 
 import { promises as fs } from 'fs';
 
@@ -12,19 +13,19 @@ import express from 'express';
 import * as bodyParser from 'body-parser';
 import * as osmosis from 'osmosis';
 
-// import { TfIdf, PorterStemmer, AggressiveTokenizer, LevenshteinDistance } from 'natural';
-// import * as path from 'path';
-
 import { Publishers, Publisher, getPublishers } from '/imports/api/publishers';
 import { Book, BookFile, NLPTerm, Books } from '/imports/api/books';
 
-import { Logger, walk, ScrapePDFFile } from '/imports/modules';
-import { PDF as pdfParser } from '/imports/modules/pdfparse';
+import { Logger, walk, ScrapePDFFile, PDF as pdfParser } from '/imports/modules';
+
+// import * as jwt from 'jsonwebtoken';
 
 import { FileManagerOperations, contentRootPathGlobal } from '/imports/api/fileManager/operations';
 import { download, downloadPdf } from '/imports/api/fileManager/download';
-// import '/imports/api/fileManager';
 
+import { FilesUpload } from '/imports/api/ostrioFiles';
+
+import '/imports/api';
 
 async function debugMiddle(req: any, res: any, next: any) {
     Logger.info(`[BooksStorage]: ${req.method}, ${req.url}`);
@@ -51,7 +52,7 @@ Meteor.startup(async () => {
     }
 
 
-    const baseFolder = Meteor.settings.walkingDirs && Meteor.settings.walkingDirs.length > 0 ? Meteor.settings.walkingDirs[0] : '';
+    const baseFolders: any[] = Meteor.settings.walkingDirs || [];
 
 
     // Make the user agent that of a browser (Google Chrome on Windows)
@@ -119,13 +120,15 @@ Meteor.startup(async () => {
 
     const publishers: Publisher[] = Publishers.find().fetch();
 
-    observableOf(...await walk(baseFolder, Meteor.settings.extensions))
+    observableFrom(baseFolders)
         .pipe(
+            mergeMap((baseFolder) => observableFrom(walk(baseFolder, baseFolder, Meteor.settings.extensions))),
+            mergeMap((list: any[]) => observableFrom(list)),
             // takeWhile((v, i) => i > 10 && i < 12),
             // filter((v, i) => i > 0 && i < 2),
-            filter((v, i) => v.base === 'Apress.Working.with.Coders.148422700X.pdf'),
+            // filter((v, i) => v.base === 'Apress.Working.with.Coders.148422700X.pdf'),
             mergeMap((fileInfo: BookFile) => {
-                const filePath = `${fileInfo.dir}/${fileInfo.base}`;
+                const filePath = `${fileInfo.root}/${fileInfo.dir}/${fileInfo.base}`;
                 return observableFrom(fs.readFile(filePath))
                     .pipe(map((file: any) => ({ file, fileInfo })));
             }),
@@ -145,7 +148,50 @@ Meteor.startup(async () => {
                 return;
             }
             if (pdfBook) {
-                Books.update({ 'fileInfo.name': pdfBook.fileInfo.name }, { $set: pdfBook }, { upsert: true });
+                const filePath = `${fileInfo.root}/${fileInfo.dir}/${fileInfo.base}`;
+
+                const book = Books.findOne({ 'fileInfo.name': pdfBook.fileInfo.name });
+                if (book) {
+                    if (!book.fileInfo._id) {
+                        const bookId = book._id;
+                        const opts: any = {
+                            meta: {
+                                projectId: '',
+                                userId: '',
+                                bookId
+                            },
+                            fileName: pdfBook.fileInfo.base,
+                            fileId: Random.id(),
+                            isPDF: true
+                        };
+
+                        FilesUpload.addFile(filePath, opts, (err: any) => err ? Logger.error(err) : '');
+                        pdfBook.fileInfo._id = opts.fileId;
+                        Books.upsert({ _id: bookId }, { $set: book }, { multi: false });
+                        Logger.debug(`Updated file info for ${pdfBook.title} & ${bookId}`, pdfBook.fileInfo, pdfBook.fileInfo._id);
+                    }
+                    // pdfBook.fileInfo._id = book.fileInfo._id;
+                    // Logger.info(book.title, book?._id, book.fileInfo, book.fileInfo._id);
+                } else {
+
+                    const bookId = Books.insert(pdfBook);
+                    const opts: any = {
+                        meta: {
+                            projectId: '',
+                            userId: '',
+                            bookId
+                        },
+                        fileName: pdfBook.fileInfo.base,
+                        fileId: Random.id(),
+                        isPDF: true
+                    };
+
+                    FilesUpload.addFile(filePath, opts, (err: any) => err ? Logger.error(err) : '');
+                    pdfBook.fileInfo._id = opts.fileId;
+                    Books.upsert({ _id: bookId }, { $set: book }, { multi: false });
+                    Logger.debug(pdfBook.title, bookId, pdfBook.fileInfo, pdfBook.fileInfo._id);
+                }
+
             }
         });
 
@@ -189,7 +235,7 @@ Meteor.startup(async () => {
     app1.use(bodyParser.json());
 
     app1.all('*', debugMiddle, async (req, res, next) => {
-       await downloadPdf(req, res, contentRootPathGlobal, next);
+        await downloadPdf(req, res, contentRootPathGlobal, next);
     });
 
     // app.post('/download/*', debugMiddle);

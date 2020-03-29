@@ -7,7 +7,7 @@ import { join, basename, extname, normalize, resolve, relative } from 'path';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { Logger } from '../modules/logger';
+import { Logger } from '../../modules/logger';
 
 // const archiver = require('archiver');
 // const multer = require('multer');

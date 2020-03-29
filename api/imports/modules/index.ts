@@ -1,5 +1,5 @@
 export * from './logger';
 export * from './pagination';
-export * from './pdfparse';
-export * from './scrapePdfFile';
+export * from './pdf/pdfparse';
+export * from './pdf/scrapePdfFile';
 export * from './walker';

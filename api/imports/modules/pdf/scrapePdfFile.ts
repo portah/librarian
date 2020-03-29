@@ -3,7 +3,7 @@ import { TfIdf, PorterStemmer, AggressiveTokenizer } from 'natural';
 import { Publisher } from '/imports/api/publishers';
 import { Book, Books } from '/imports/api/books';
 
-import { Logger } from './logger';
+import { Logger } from '../logger';
 
 
 // https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s13.html
@@ -37,69 +37,44 @@ const stopWords = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'a
 export class ScrapeFile {
 
     protected aggressiveTokenizer: AggressiveTokenizer;
+    protected fileNameTokenized: any;
 
     constructor(protected fileInfo: any, protected publishers?: Publisher[]) {
         this.aggressiveTokenizer = new AggressiveTokenizer();
         // @ts-ignore
         PorterStemmer.addStopWords(stopWords);
         PorterStemmer.attach();
-    }
-}
 
-export class ScrapePDFFile extends ScrapeFile {
+        this.publishers = this.publishers || [];
 
-    constructor(protected pdfData: any, protected fileInfo: any, protected publishers?: Publisher[]) {
-        super(fileInfo, publishers);
-
-    }
-    /**
-     * Get the most out of the PDF file
-     * @param pdfData - from pdf parser
-     * @param fileInfo - file data from fs stats
-     * @param publishers - list of publishers {title: string, url: string}
-     */
-    scrapePDFFile() {
-        const pdfData = this.pdfData;
-        const fileInfo = this.fileInfo;
-        const publishers = this.publishers;
-
-        let title = '';
-        let description = '';
-        let creator = '';
-        let authors: string[] = [];
-
-        if (pdfData.metadata && pdfData.metadata._metadata) {
-            if (pdfData.metadata._metadata['dc:title']) {
-                title = pdfData.metadata._metadata['dc:title'];
-            }
-            if (pdfData.metadata._metadata['dc:description']) {
-                description = pdfData.metadata._metadata['dc:description'];
-            }
-            if (pdfData.metadata._metadata['dc:creator']) {
-                creator = pdfData.metadata._metadata['dc:creator'];
-                authors = creator.split(/;/);
-            }
+        if (!fileInfo || !fileInfo.name) {
+            throw new Error('empty fileInfo & name');
         }
+        this.fileNameTokenized = this.aggressiveTokenizer.tokenize(fileInfo.name);
+    }
 
-        const fileNameTokenized = this.aggressiveTokenizer.tokenize(fileInfo.name);
-
-        // take ISBN
-        const isbn = fileNameTokenized.find((word: string, index: number) => {
+    // take ISBN
+    protected isbn(): string {
+        return this.fileNameTokenized.find((word: string, index: number) => {
             if (isbnRegExp.test(word)) {
-                fileNameTokenized.splice(index, 1);
+                this.fileNameTokenized.splice(index, 1);
                 return true;
             }
             return false;
         });
+    }
 
+    // take PUBLISHER
+
+    protected publisher(): Publisher | undefined {
         let publisher: Publisher | undefined;
-        if (publishers && publishers.length > 0) {
+        if (this.publishers && this.publishers.length > 0) {
             let tmpPublisher: Publisher | undefined;
             let publisherWords = 0;
             const publisherIndices: number[] = [];
-            fileNameTokenized.find((word: string, index: number) => {
+            this.fileNameTokenized.find((word: string, index: number) => {
                 // search for publisher
-                publisher = publishers.find((p: Publisher) => {
+                publisher = this.publishers?.find((p: Publisher) => {
 
                     const tmpPublisherWords = this.aggressiveTokenizer.tokenize(p.title.toLowerCase());
 
@@ -119,29 +94,72 @@ export class ScrapePDFFile extends ScrapeFile {
                 // found or not
                 if (publisher) {
                     if (publisherWords === 1) {
-                        fileNameTokenized.splice(index, 1);
+                        this.fileNameTokenized.splice(index, 1);
                     } else {
                         publisherIndices.forEach((v, i) => {
-                            fileNameTokenized.splice(v - i, 1);
+                            this.fileNameTokenized.splice(v - i, 1);
                         });
                     }
                     return true;
                 }
                 if (!publisher && publisherWords > 0 && publisherIndices[0] === 0) {
                     publisher = tmpPublisher;
-                    fileNameTokenized.splice(0, 1);
+                    this.fileNameTokenized.splice(0, 1);
                     return true;
                 }
                 return false;
             });
         }
+        return publisher;
+    }
+
+}
+
+export class ScrapePDFFile extends ScrapeFile {
+
+    constructor(protected pdfData: any, protected fileInfo: any, protected publishers?: Publisher[]) {
+        super(fileInfo, publishers);
+
+    }
+    /**
+     * Get the most out of the PDF file
+     * @param pdfData - from pdf parser
+     * @param fileInfo - file data from fs stats
+     * @param publishers - list of publishers {title: string, url: string}
+     */
+    scrapePDFFile() {
+        const pdfData = this.pdfData;
+        const fileInfo = this.fileInfo;
+
+        let title = '';
+        let description = '';
+        let creator = '';
+        let authors: string[] = [];
+
+        if (pdfData.metadata && pdfData.metadata._metadata) {
+            if (pdfData.metadata._metadata['dc:title']) {
+                title = pdfData.metadata._metadata['dc:title'];
+            }
+            if (pdfData.metadata._metadata['dc:description']) {
+                description = pdfData.metadata._metadata['dc:description'];
+            }
+            if (pdfData.metadata._metadata['dc:creator']) {
+                creator = pdfData.metadata._metadata['dc:creator'];
+                authors = creator.split(/;/);
+            }
+        }
+
+        // const fileNameTokenized = this.aggressiveTokenizer.tokenize(fileInfo.name);
+
+
+        const publisher: Publisher | undefined = this.publisher();
 
         if (!title && pdfData.info.Title) {
             title = pdfData.info.Title;
         } else if (title && title.length < pdfData.info.Title.length) {
             title = pdfData.info.Title;
         } else {
-            title = fileNameTokenized.join(' ');
+            title = this.fileNameTokenized.join(' ');
         }
 
 
@@ -153,12 +171,12 @@ export class ScrapePDFFile extends ScrapeFile {
         const pdfBook: Book = {} as Book;
         pdfBook.title = title;
         pdfBook.authors = authors;
-        pdfBook.isbn = isbn;
+        pdfBook.isbn = this.isbn();
         pdfBook.numPages = pdfData.numPages;
         pdfBook.description = description;
         pdfBook.publisher = publisher;
         pdfBook.fileInfo = fileInfo;
-        const {text, imageBase64, ...printData} = pdfData;
+        const { text, imageBase64, ...printData } = pdfData;
         Logger.debug('PDF Book: ', pdfBook, printData);
         pdfBook.imageBase64 = imageBase64;
 
@@ -189,21 +207,4 @@ export class ScrapePDFFile extends ScrapeFile {
         return pdfBook;
     }
 
-
-    /**
-     * Splits file name and
-     * @param fileName
-     */
-    private extractISBN(fileName: string[]): any {
-
-        // take ISBN
-        const isbn = fileName.find((word: string, index: number) => {
-            if (isbnRegExp.test(word)) {
-                fileName.splice(index, 1);
-                return true;
-            }
-            return false;
-        });
-
-    }
 }

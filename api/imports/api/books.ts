@@ -14,6 +14,7 @@ export interface NLPTerm {
 }
 
 export interface BookFile {
+    _id?: string;
     root?: string;
     base?: string;
     name: string;
