@@ -1,5 +1,5 @@
 import { promises as fsPromises } from 'fs';
-import { join, basename, extname, normalize, resolve, relative } from 'path';
+import { join, normalize, resolve, relative } from 'path';
 import { Logger } from '/imports/modules';
 // const archiver = require('archiver');
 

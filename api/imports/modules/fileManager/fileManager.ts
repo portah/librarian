@@ -1,23 +1,18 @@
-/*jshint esversion: 8 */
-// let express = require('express');
+import { Meteor } from 'meteor/meteor';
+import { WebApp } from 'meteor/webapp';
 
 import { promises as fsPromises } from 'fs';
 import { join, basename, extname, normalize, resolve, relative } from 'path';
 
-import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
+import express from 'express';
+import fs from 'fs';
+import * as bodyParser from 'body-parser';
 
-import { Logger } from '../../modules/logger';
-
+import { Logger } from '../logger';
 // const archiver = require('archiver');
 // const multer = require('multer');
-const fs = require('fs');
-// let cors = require('cors');
 
 // let yargs = require('yargs');
-import express from 'express';
-
-import * as bodyParser from 'body-parser';
 
 let size = 0;
 let copyName = '';
@@ -25,9 +20,6 @@ let location = '';
 let isRenameChecking = false;
 let accessDetails: any = null;
 // const path = require('path');
-
-
-const pattern = /(\.\.\/)/g;
 
 const contentRootPath = Meteor.settings.walkingDirs[0] + '/';
 // yargs.argv.d;

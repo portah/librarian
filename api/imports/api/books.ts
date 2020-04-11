@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 
-import { Publisher } from './publishers';
+import { Publisher } from '../modules/publishers';
 
 import { paginationPublish } from '../modules/pagination';
 import { Logger } from '../modules/logger';

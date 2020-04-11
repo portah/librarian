@@ -11,7 +11,7 @@ import {
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import * as screenFull from 'screenfull';
 import { pipe } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, mergeMap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { BooksService } from '../books.service';
@@ -49,16 +49,26 @@ export class BookViewComponent implements OnInit, AfterViewInit {
             switchMap((params: ParamMap) => {
                 this._id = params.get('id');
                 return this.booksService.booksList$()
-                    .pipe(map((books) => ({ params, books })));
-            }
-            )).subscribe(({ params, books }: any) => {
-                const book = books.find(b => b._id === params.get('id'));
+                    .pipe(
+                        map((books) => ({ params, book: books.find(b => b._id === params.get('id')) })),
+                    );
+            }),
+            mergeMap(({ params, book }: any) => {
                 console.log(book);
+                return this.booksService.file$(book.fileInfo._id)
+                .pipe(
+                    map((file) => ({ params, book, file } )),
+                );
+            })
+        ).subscribe(({ params, book, file }: any) => {
+            console.log(file, file.link());
 
-                this.zone.run(() => {
-                    this.document = `${this.hostUrl}/${this._id}`;
-                });
+            this.zone.run(() => {
+                this.document = file.link(); // `${this.hostUrl}/${this._id}`;
             });
+        });
+
+
     }
 
     ngAfterViewInit(): void {

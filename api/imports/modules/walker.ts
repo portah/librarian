@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import { join, parse, relative } from 'path';
 import { Book } from '/imports/api/books';
+import { Logger } from './logger';
 
 /**
  * Walk a directory returns array of files with stats
@@ -36,7 +37,7 @@ export async function walk(baseDir: string, dir: string, extensions?: string[] |
                 }
             }
         } catch (e) {
-            console.log(e);
+            Logger.error(e);
         }
     }, Promise.resolve([]))];
 }

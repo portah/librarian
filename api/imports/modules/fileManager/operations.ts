@@ -1,18 +1,17 @@
+import { Meteor } from 'meteor/meteor';
+
 import { promises as fsPromises, Stats } from 'fs';
 import { join, basename, extname, normalize, resolve, relative } from 'path';
 
-import { Meteor } from 'meteor/meteor';
-
-import { Logger } from '../../modules/logger';
+import { Logger } from '../logger';
+import { getPermission } from './permissions';
 
 // const archiver = require('archiver');
 // const multer = require('multer');
-const fs = require('fs');
+// const fs = require('fs');
 
 
 export const contentRootPathGlobal = Meteor.settings.walkingDirs[0] + '/';
-
-import { getPermission } from './permissions';
 
 /**
  *
@@ -61,7 +60,7 @@ export class FileManagerOperations {
         if (action === 'copy') {
             // CopyFiles(req, res, contentRootPath);
         }
-        // Action for movinh files
+        // Action for moving files
         if (action === 'move') {
             // MoveFiles(req, res, contentRootPath);
         }

@@ -82,7 +82,7 @@ export const FilesUpload = new FilesCollection({
     protected(fileObj: FileObj) {
 
         let telegram: any = {};
-        let auth = false;
+        let auth = true;
 
         // if (!this.userId) {
         //     if (!this.request.query && !this.request.query.token) {
@@ -257,10 +257,10 @@ export const FilesUpload = new FilesCollection({
 
 });
 
-Meteor.publish('raw_data_files', function ({ sampleId, projectId, fileIdes, token }) {
-    Logger.debug('[raw_data_files]: publish: ', sampleId, projectId, fileIdes, token);
+Meteor.publish('raw_data_files', function () {
+    Logger.debug('[raw_data_files]: publish: '); // , sampleId, projectId, fileIdes, token);
 
-    check(token, String);
+    // check(token, String);
 
 
     // let verifyOptions = {
@@ -279,24 +279,25 @@ Meteor.publish('raw_data_files', function ({ sampleId, projectId, fileIdes, toke
     //     throw new Meteor.Error(500, err);
     // }
 
-    if (fileIdes && Array.isArray(fileIdes)) {
+    // if (fileIdes && Array.isArray(fileIdes)) {
 
-        check(fileIdes, [String]);
-        return FilesUpload.find({ _id: { $in: fileIdes } }).cursor;
+    //     check(fileIdes, [String]);
+    //     return FilesUpload.find({ _id: { $in: fileIdes } }).cursor;
 
-    } else if (sampleId) {
+    // } else if (sampleId) {
 
-        check(sampleId, String);
-        return FilesUpload.find({ 'meta.sampleId': sampleId }).cursor;
+    //     check(sampleId, String);
+    //     return FilesUpload.find({ 'meta.sampleId': sampleId }).cursor;
 
-    } else if (projectId) {
+    // } else if (projectId) {
 
-        check(projectId, String);
-        return FilesUpload.find({ 'meta.projectId': projectId }).cursor;
+    //     check(projectId, String);
+    //     return FilesUpload.find({ 'meta.projectId': projectId }).cursor;
 
-    } else {
-        this.ready();
-    }
+    // } else {
+    //     this.ready();
+    // }
+    return FilesUpload.find({ }).cursor;
 });
 
 Meteor.startup(() => {

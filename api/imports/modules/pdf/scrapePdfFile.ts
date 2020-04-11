@@ -1,6 +1,6 @@
 import { TfIdf, PorterStemmer, AggressiveTokenizer } from 'natural';
 
-import { Publisher } from '/imports/api/publishers';
+import { Publisher } from '../publishers';
 import { Book, Books } from '/imports/api/books';
 
 import { Logger } from '../logger';
@@ -156,7 +156,7 @@ export class ScrapePDFFile extends ScrapeFile {
 
         if (!title && pdfData.info.Title) {
             title = pdfData.info.Title;
-        } else if (title && title.length < pdfData.info.Title.length) {
+        } else if (title && pdfData.info.Title && title.length < pdfData.info.Title.length) {
             title = pdfData.info.Title;
         } else {
             title = this.fileNameTokenized.join(' ');

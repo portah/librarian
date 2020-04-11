@@ -4,7 +4,7 @@
     "DDP_DEFAULT_CONNECTION_URL": "http://localhost:3030",
     "ROOT_URL": "http://localhost:3030"
   },
-  "arch": "web.browser.legacy",
+  "arch": "web.browser",
   "generateNodeModules": true,
   "writeRuntimeConfig": false,
   "npmPackages": []

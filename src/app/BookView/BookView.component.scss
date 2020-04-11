@@ -33,6 +33,25 @@ pdf-toolbar {
     height: 0;
 }
 
-div#sidebarContainer, div#viewerContainer, .secondaryToolbar {
+div#viewerContainer, .secondaryToolbar {
     top: 0px !important;
 }
+
+div#sidebarContent {
+    background-color: hsl(201, 30%, 13%, 0.9)
+}
+
+div#toolbarSidebar {
+    background-color: hsl(201, 30%, 13%, 0.9) !important;
+    background-image: none;
+}
+
+
+div#sidebarContainer {
+    top: 0px !important;
+    min-width: 300px;
+    width: var(--sidebar-width);
+    // visibility: hidden !important;
+    z-index: 2;
+}
+
