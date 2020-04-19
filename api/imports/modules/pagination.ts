@@ -24,18 +24,18 @@ export function paginationParams(params: any, serverParams?: any) {
         check(params.fields, String);
         params.fields = JSON.parse(params.fields);
     }
-    let pSearch = false;
+    let isPermSearch = false;
     if (params && params.permSearch) {
         check(params.permSearch, String);
         params.permSearch = JSON.parse(params.permSearch);
 
         Object.keys(params.permSearch).forEach(k => {
-            pSearch = true;
+            isPermSearch = true;
             check(k, String);
             check(params.permSearch[k], Match.OneOf(String, Number));
         });
     } else {
-        params['permSearch'] = {};
+        params.permSearch = {};
     }
 
     paginationCheck(params);
@@ -66,16 +66,16 @@ export function paginationParams(params: any, serverParams?: any) {
         localOptions = { sort: [[params.sortBy, params.sortOrder]], ...localOptions };
     }
 
-    if (!helpers.isUndefined(params.sorting) && params.sorting[1] !=='') {
+    if (!helpers.isUndefined(params.sorting) && params.sorting[1] !== '') {
         // @ts-ignore
         localOptions = { sort: [params.sorting], ...localOptions };
     }
 
-    if (!helpers.isUndefined(serverParams) && serverParams['options']) {
-        localOptions = { ...localOptions, ...serverParams['options'] };
+    if (!helpers.isUndefined(serverParams) && serverParams.options) {
+        localOptions = { ...localOptions, ...serverParams.options };
     }
 
-    let _orselector: any = { $or: [] };
+    let orSelector: any = { $or: [] };
 
     if (params.fields && params.fields.length > 0 && !!params.search) {
 
@@ -85,15 +85,15 @@ export function paginationParams(params: any, serverParams?: any) {
                 $regex: params.search,
                 $options: 'i'
             };
-            _orselector['$or'].push(newFilteringItem);
+            orSelector['$or'].push(newFilteringItem);
         });
     }
 
-    let _selector = {};
-    if (pSearch) {
-        let _andselector: any = { $and: [] };
+    let localSelector = {};
+    if (isPermSearch) {
+        const andSelector: any = { $and: [] };
         Object.keys(params.permSearch).forEach(k => {
-            let newFilteringItem: any = {};
+            const newFilteringItem: any = {};
 
             if (isNaN(params.permSearch[k])) {
                 newFilteringItem[k] = {
@@ -103,24 +103,24 @@ export function paginationParams(params: any, serverParams?: any) {
             } else {
                 newFilteringItem[k] = +params.permSearch[k];
             }
-            _andselector['$and'].push(newFilteringItem);
+            andSelector['$and'].push(newFilteringItem);
         });
-        if (_orselector['$or'].length > 0) {
-            _andselector['$and'].push(_orselector);
+        if (orSelector['$or'].length > 0) {
+            andSelector['$and'].push(orSelector);
         }
-        _selector = _andselector;
+        localSelector = andSelector;
     } else {
-        if (_orselector['$or'].length > 0) {
-            _selector = _orselector;
+        if (orSelector['$or'].length > 0) {
+            localSelector = orSelector;
         }
     }
 
-    if (!helpers.isUndefined(serverParams) && serverParams['selector']) {
-        _selector = { ..._selector, ...serverParams['selector'] };
+    if (!helpers.isUndefined(serverParams) && serverParams.selector) {
+        localSelector = { ...localSelector, ...serverParams.selector };
     }
 
-    Logger.debug(_selector);
-    return { options: localOptions, selector: _selector };
+    Logger.debug(localSelector);
+    return { options: localOptions, selector: localSelector };
 }
 
 
@@ -135,7 +135,7 @@ export function paginationParams(params: any, serverParams?: any) {
  */
 export function paginationPublish(collection: Mongo.Collection<any> | any,
     params: any,
-    serverParams?: any,
+    serverParams?: { options?: any, selector?: any },
     options?: { pagination?: boolean, reactive?: boolean, fields?: {} }): any {
 
     Logger.debug('paginationPublish: ' + collection._name, params, serverParams, options);
@@ -150,7 +150,7 @@ export function paginationPublish(collection: Mongo.Collection<any> | any,
 
 
     if (params.page === 1 && helpers.isUndefined(options.reactive)) {
-        localPaginationParams['nonReactive'] = true;
+        // localPaginationParams.nonReactive = true;
         options.reactive = true;
     }
 
@@ -161,7 +161,7 @@ export function paginationPublish(collection: Mongo.Collection<any> | any,
         Logger.error(`nonReactive: sub_${self._subscriptionId}`);
         collection
             .find(localPaginationParams.selector, localPaginationParams.options, fields)
-            .forEach( (u: any) => {
+            .forEach((u: any) => {
                 self.added(collectionNamePagination, u._id, u);
                 self.changed(collectionNamePagination, u._id, { [`sub_${self._subscriptionId}`]: 1 });
             });

@@ -49,6 +49,16 @@ export interface Book {
 
     publisher?: Publisher;
     fileInfo: BookFile;
+    recent?: {
+        page: number;
+        zoom: string | number;
+        position: {
+            a: number,
+            b: number
+        },
+        lastAccessTime: number;
+    };
+}
 }
 
 export const Books = new Mongo.Collection<Book>('books');
@@ -70,7 +80,7 @@ Books.deny({
  */
 const fields = { invoice: 0 };
 
-Meteor.publish('books/list', function(params?) {
+Meteor.publish('books/list', function (params?) {
 
     params = {
         filtering: {},
@@ -83,7 +93,7 @@ Meteor.publish('books/list', function(params?) {
     //     params.filtering["userId"] = Meteor.userId();
     // }
 
-    paginationPublish.bind(this, Books, params, {}, { fields: fields })();
+    paginationPublish.bind(this, Books, params, { options: {sort: { title: 1 } }}, { fields })();
     return this.ready();
 });
 

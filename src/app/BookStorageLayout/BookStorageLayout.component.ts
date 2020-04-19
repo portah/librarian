@@ -8,7 +8,7 @@ import { MediaObserver } from '@angular/flex-layout';
 })
 export class BookStorageLayoutComponent implements OnInit {
 
-    title = 'Book Storage';
+    title = 'Librarian';
     collapsed = true;
 
 
