@@ -1,5 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
+import { check, Match } from 'meteor/check';
 
 import { Publisher } from '../modules/publishers';
 
@@ -59,7 +60,7 @@ export interface Book {
         lastAccessTime: number;
     };
 }
-}
+
 
 export const Books = new Mongo.Collection<Book>('books');
 
@@ -75,26 +76,45 @@ Books.deny({
 });
 
 /**
- * exclude invoices from publishing
+ * exclude nlpTerms from publishing
  * @params params = {{book: number}}
  */
-const fields = { invoice: 0 };
+const fields = { nlpTerms: 0 };
 
 Meteor.publish('books/list', function (params?) {
+    Logger.debug('books/list: ', params);
 
+    let serverParams: any = {};
+
+    if (!params.sortBy) {
+        serverParams = { options: { sort: { title: 1 } } };
+    }
+    if (params.directParams) {
+        check(params, Match.ObjectIncluding({
+            directParams: { recent: { $exists: Match.OneOf(Boolean, Number) } }
+        }));
+        serverParams = { ...serverParams, selector: params.directParams };
+    }
     params = {
         filtering: {},
         ...params
     };
 
-    Logger.debug('books/list: ', params);
-
     // if (!Roles.userIsInRole(Meteor.userId(), ['admin', 'billing'], Roles.GLOBAL_GROUP)) {
     //     params.filtering["userId"] = Meteor.userId();
     // }
 
-    paginationPublish.bind(this, Books, params, { options: {sort: { title: 1 } }}, { fields })();
+    paginationPublish.bind(this, Books, params, serverParams, { fields })();
     return this.ready();
+});
+
+
+Meteor.publish('book/id', function (id) {
+
+    check(id, String);
+    Logger.debug('book/id: ', id);
+
+    return Books.find({ _id: id });
 });
 
 

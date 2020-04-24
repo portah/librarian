@@ -1,3 +1,13 @@
+/**
+ *  Looks like filtering is obsolete
+ *  paginationPublish.bind(this, Mongo.Collection, params, serverParams, { fields })();
+ *  params: {
+ *    fields
+ *    search
+ *    permSearch
+ * }
+ *
+ */
 import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { helpers } from './helpers';
@@ -57,15 +67,11 @@ export function paginationParams(params: any, serverParams?: any) {
         if (!isNaN(params.sortOrder)) {
             params.sortOrder = params.sortOrder * 1;
         }
-        // if(params.sortOrder*1 == 1){
-        //     params.sortOrder='asc';
-        // } else if(params.sortOrder*1 == -1) {
-        //     params.sortOrder='desc';
-        // }
         // @ts-ignore
         localOptions = { sort: [[params.sortBy, params.sortOrder]], ...localOptions };
     }
 
+    // TODO: check what is sorting
     if (!helpers.isUndefined(params.sorting) && params.sorting[1] !== '') {
         // @ts-ignore
         localOptions = { sort: [params.sorting], ...localOptions };
@@ -82,6 +88,7 @@ export function paginationParams(params: any, serverParams?: any) {
         params.fields.forEach((sf: any) => {
             let newFilteringItem: any = {};
             newFilteringItem[sf] = {
+                // TODO: in search replace ' ' to '|' ?
                 $regex: params.search,
                 $options: 'i'
             };
@@ -171,15 +178,15 @@ export function paginationPublish(collection: Mongo.Collection<any> | any,
         const handle = collection
             .find(localPaginationParams.selector, localPaginationParams.options, fields)
             .observeChanges({
-                added(id: string, fields: any) {
-                    self.added(collectionNamePagination, id, fields);
+                added(id: string, fieldsAffected: any) {
+                    self.added(collectionNamePagination, id, fieldsAffected);
                     self.changed(collectionNamePagination, id, { [`sub_${self._subscriptionId}`]: 1 });
                     const count = collection.find(localPaginationParams.selector).count();
                     self.added(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count });
                     self.changed(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count });
                 },
-                changed(id: string, fields: any) {
-                    self.changed(collectionNamePagination, id, fields);
+                changed(id: string, fieldsAffected: any) {
+                    self.changed(collectionNamePagination, id, fieldsAffected);
                     self.changed(collectionNamePaginationCount, `sub_${self._subscriptionId}`, { count: collection.find(localPaginationParams.selector).count() });
                 },
                 removed(id: any) {

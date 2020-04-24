@@ -12,7 +12,7 @@ import {
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Location, LocationStrategy } from '@angular/common';
 
-import { pipe, Subject, fromEvent, merge, zip, of } from 'rxjs';
+import { pipe, Subject, fromEvent, merge, zip, of, combineLatest } from 'rxjs';
 import { switchMap, map, mergeMap, debounceTime, first, takeWhile, skipUntil } from 'rxjs/operators';
 import { NgxExtendedPdfViewerComponent, IPDFViewerApplication, NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 
@@ -128,14 +128,15 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
 
 
         // Get route params find the book and show PDFviewer
-        zip(this.route.paramMap, this.route.queryParamMap).pipe(
+        combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(
             switchMap(([params, query]) => {
                 this.bookId = params.get('id');
                 console.log(params, query);
-                return this.booksService.booksList$()
-                    .pipe(
-                        map((books) => ({ params, query, book: books.find(b => b._id === params.get('id')) })),
-                    );
+
+                return this.booksService.book$(this.bookId)
+                .pipe(
+                    map((book: any) => ({ params, query, book}))
+                );
             }),
             mergeMap(({ params, book, query }: any) => {
                 console.log(book);

@@ -1,10 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Mongo } from 'meteor/mongo';
+import { Router, ActivatedRoute } from '@angular/router';
+import { LocationStrategy, Location } from '@angular/common';
+
 import { of, Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
+
 import { FilesCollection, FileObj } from 'meteor/ostrio:files';
+import { Mongo } from 'meteor/mongo';
 
 import { BaseService } from '../lib/base.service';
+
+import { SDPagination } from '../lib/pagination';
 
 const Books = new Mongo.Collection<any>('books');
 
@@ -19,8 +25,27 @@ const bookFiles = new FilesCollection({
 })
 export class BooksService extends BaseService {
 
-    constructor() {
+    public pagination: SDPagination;
+    constructor(private router: Router, private route: ActivatedRoute, private location: Location, public locationStrategy: LocationStrategy) {
         super();
+        console.log('constructor?');
+        this.pagination = new SDPagination('books/list', Books, this.router, this.route, this.location, this.locationStrategy,
+            'bookshelf', {
+            sortBy: 'title',
+            sortOrder: 1,
+            page: 1,
+            searchFields: ['title', 'nlpTags', 'authors', 'description'],
+            pageSize: 40
+        });
+        // this.pagination.permSearch('recent.pdfOpenParams', 'page', true);
+    }
+
+    get pagination$(): Observable<any[]> {
+        return this.pagination.paginationCache$();
+    }
+
+    paginationSearch(search): Observable<any> {
+        return this.pagination.search(search);
     }
 
     booksList$(): Observable<any[]> {
@@ -30,6 +55,10 @@ export class BooksService extends BaseService {
                     return of(d.fetch());
                 })
             );
+    }
+
+    book$(id): Observable<any> {
+        return this.MeteorSubscribeAutorun('book/id', id, () => Books.findOne({ _id: id }));
     }
 
     /**

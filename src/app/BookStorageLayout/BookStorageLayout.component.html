@@ -55,12 +55,12 @@
 
     <clr-vertical-nav [clrVerticalNavCollapsible]="true" [(clrVerticalNavCollapsed)]="collapsed" class="nav-trigger--bottom" [clr-nav-level]="2">
 
-      <a clrVerticalNavLink routerLinkActive="active" routerLink="/bookshelf" preserveQueryParams>
+      <a clrVerticalNavLink routerLinkActive="active" routerLink="/bookshelf/all">
         <!-- <i class="fad fa-home" clrVerticalNavIcon></i> -->
         <clr-icon shape="home" clrVerticalNavIcon></clr-icon>
         Library
       </a>
-      <a clrVerticalNavLink routerLinkActive="active" routerLink="/filemanager" preserveQueryParams>
+      <a clrVerticalNavLink routerLinkActive="active" routerLink="/filemanager">
         <clr-icon shape="folder-open" clrVerticalNavIcon></clr-icon>
         Folders
       </a>
@@ -69,7 +69,7 @@
         <!-- <clr-icon shape="folder-open" clrVerticalNavIcon></clr-icon> -->
         <!-- Folders -->
         <!-- <clr-vertical-nav-group-children> -->
-          <!-- <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active"> -->
+          <!-- <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active" preserveQueryParams> -->
             <!-- pdfs -->
           <!-- </a> -->
           <!-- <a clrVerticalNavLink routerLink="./normal/snorlax" routerLinkActive="active"> -->
@@ -78,27 +78,25 @@
         <!-- </clr-vertical-nav-group-children> -->
       <!-- </clr-vertical-nav-group> -->
       <clr-vertical-nav-group routerLinkActive="active" clrVerticalNavGroupExpanded='true'>
-        <!-- <clr-icon shape="library" clrVerticalNavIcon></clr-icon> -->
-        <i class="fad fa-swatchbook" clrVerticalNavIcon></i>
+        <clr-icon shape="library" clrVerticalNavIcon></clr-icon>
         Collections
         <clr-vertical-nav-group-children>
-          <a clrVerticalNavLink routerLink="./fire/charmander" routerLinkActive="active">
+          <a clrVerticalNavLink routerLink="/bookshelf/recent" routerLinkActive="active">
             Recent Readings
           </a>
-          <a clrVerticalNavLink routerLink="./fire/charizard" routerLinkActive="active">
-            Charizard
+          <a clrVerticalNavLink routerLink="/bookshelf/new" routerLinkActive="active">
+            Recent Addings
           </a>
         </clr-vertical-nav-group-children>
       </clr-vertical-nav-group>
       <clr-vertical-nav-group routerLinkActive="active" clrVerticalNavGroupExpanded='true'>
-        <!-- <clr-icon shape="note" clrVerticalNavIcon></clr-icon> -->
-        <i class="fad fa-edit" clrVerticalNavIcon></i>
+        <clr-icon shape="note" clrVerticalNavIcon></clr-icon>
         Reading
         <clr-vertical-nav-group-children>
-          <a clrVerticalNavLink routerLink="./electric/pikachu" routerLinkActive="active">
+          <a clrVerticalNavLink routerLink="/bookmarks" routerLinkActive="active">
             Bookmarks
           </a>
-          <a clrVerticalNavLink routerLink="./electric/raichu" routerLinkActive="active">
+          <a clrVerticalNavLink routerLink="/notes" routerLinkActive="active">
             Notes
           </a>
         </clr-vertical-nav-group-children>
@@ -113,6 +111,5 @@
     <div class="content-area">
       <router-outlet></router-outlet>
     </div>
-
   </div>
 </clr-main-container>
