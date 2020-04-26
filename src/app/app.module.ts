@@ -1,8 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BREAKPOINTS, DEFAULT_BREAKPOINTS, FlexLayoutModule } from '@angular/flex-layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { HttpClientModule } from '@angular/common/http';
 
 import { ClarityModule } from '@clr/angular';
 
@@ -31,6 +33,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { BooksService } from './books.service';
+import { SearchService } from './search.service';
 
 import { BookStorageLayoutComponent } from './BookStorageLayout/BookStorageLayout.component';
 import { BookViewComponent } from './BookView/BookView.component';
@@ -39,35 +42,11 @@ import { BookShelfComponent } from './BookShelf/BookShelf.component';
 import { BookShelfViewComponent } from './BookShelf/BookShelfView/BookShelfView.component';
 
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatIconModule } from '@angular/material/icon';
 
 export const MD_MATERIAL_MODULES: Array<any> = [
    MatPaginatorModule,
-   // MatAutocompleteModule,
-   // MatButtonModule,
-   // MatButtonToggleModule,
-   // MatCheckboxModule,
-   // MatCardModule,
-   // MatChipsModule,
-   // MatDatepickerModule,
-   // MatDialogModule,
-   // MatDividerModule,
-   // MatExpansionModule,
-   // MatGridListModule,
-   // MatInputModule,
-   // MatIconModule,
-   // MatLineModule,
-   // MatListModule,
-   // MatMenuModule,
-   // MatProgressSpinnerModule,
-   // MatProgressBarModule,
-   // MatSelectModule,
-   // MatSidenavModule,
-   // MatSliderModule,
-   // MatSlideToggleModule,
-   // MatTooltipModule,
-   // MatTabsModule,
-   // MatTreeModule,
-   // MatToolbarModule,
+   MatIconModule,
    FlexLayoutModule,
    OverlayModule
 ];
@@ -96,7 +75,8 @@ export const BreakPointsProvider = {
       NgPipesModule,
       FileManagerModule,
       NgxExtendedPdfViewerModule,
-      // HttpClientModule,
+      FormsModule,
+      HttpClientModule,
       // PdfViewerModule,
       // PdfViewerComponent,
       // DialogModule,
@@ -107,11 +87,12 @@ export const BreakPointsProvider = {
    providers: [
       BooksService,
       ReversePipe,
-      BreakPointsProvider,
+      // BreakPointsProvider,
       NavigationPaneService,
       ToolbarService,
       DetailsViewService,
-      NgxExtendedPdfViewerService
+      NgxExtendedPdfViewerService,
+      SearchService
       // LinkAnnotationService,
       // BookmarkViewService,
       // MagnificationService,

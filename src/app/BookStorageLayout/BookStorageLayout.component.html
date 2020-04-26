@@ -4,16 +4,22 @@
   </div> -->
   <clr-header class="header header-6">
     <div class="branding">
-      <a href="/" class="nav-link">
-        <i class="fad fa-books fa-2x"></i>&nbsp;
-        <span class="title">{{title}}</span>
+      <a routerLink="/" class="nav-link">
+        <mat-icon svgIcon="books" aria-hidden="false" aria-label="Librarian"></mat-icon> &nbsp;
+        <span *ngIf="this.mediaObserver.isActive('gt-sm')" class="title">{{title}}</span>
       </a>
     </div>
-    <form class="search">
-      <label for="search_input">
-        <input id="search_input" type="text" placeholder="&nbsp;Search for keywords...">
-      </label>
-    </form>
+    <div class="searchbar-container">
+      <div class="icons-search-wrapper">
+        <label for="search-icons-sticky" class="searchbar-label">
+          <clr-icon shape="search" size="24"></clr-icon>
+          <button aria-label="Close" class="close" type="button" (click)="searchService.searchTerm=''" [class.active]="searchService.searchTerm">
+            <clr-icon shape="close" size="24"></clr-icon>
+          </button>
+          <input id="search-icons-sticky" placeholder="Search for keywords..." type="text" class="searchbar-input clr-input" [(ngModel)]="searchService.searchTerm"/>
+        </label>
+      </div>
+    </div>
 
     <div class="header-actions">
       <clr-dropdown>
@@ -31,7 +37,7 @@
 
   </clr-header>
 
-  <nav class="subnav" [clr-nav-level]="1">
+  <nav class="subnav">
     <ul class="nav">
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/bookshelf']" [queryParams]="{view: 'cards'}">
@@ -53,7 +59,7 @@
 
   <div class="content-container">
 
-    <clr-vertical-nav [clrVerticalNavCollapsible]="true" [(clrVerticalNavCollapsed)]="collapsed" class="nav-trigger--bottom" [clr-nav-level]="2">
+    <clr-vertical-nav [clrVerticalNavCollapsible]="true" [(clrVerticalNavCollapsed)]="collapsed" class="nav-trigger--bottom" [clr-nav-level]="1">
 
       <a clrVerticalNavLink routerLinkActive="active" routerLink="/bookshelf/all">
         <!-- <i class="fad fa-home" clrVerticalNavIcon></i> -->
@@ -65,17 +71,17 @@
         Folders
       </a>
       <!-- <clr-vertical-nav-group routerLinkActive="active" clrVerticalNavGroupExpanded='true'> -->
-        <!-- <i class="fad fa-folders" clrVerticalNavIcon></i> -->
-        <!-- <clr-icon shape="folder-open" clrVerticalNavIcon></clr-icon> -->
-        <!-- Folders -->
-        <!-- <clr-vertical-nav-group-children> -->
-          <!-- <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active" preserveQueryParams> -->
-            <!-- pdfs -->
-          <!-- </a> -->
-          <!-- <a clrVerticalNavLink routerLink="./normal/snorlax" routerLinkActive="active"> -->
-            <!-- epubs -->
-          <!-- </a> -->
-        <!-- </clr-vertical-nav-group-children> -->
+      <!-- <i class="fad fa-folders" clrVerticalNavIcon></i> -->
+      <!-- <clr-icon shape="folder-open" clrVerticalNavIcon></clr-icon> -->
+      <!-- Folders -->
+      <!-- <clr-vertical-nav-group-children> -->
+      <!-- <a clrVerticalNavLink routerLink="./normal/pidgey" routerLinkActive="active" preserveQueryParams> -->
+      <!-- pdfs -->
+      <!-- </a> -->
+      <!-- <a clrVerticalNavLink routerLink="./normal/snorlax" routerLinkActive="active"> -->
+      <!-- epubs -->
+      <!-- </a> -->
+      <!-- </clr-vertical-nav-group-children> -->
       <!-- </clr-vertical-nav-group> -->
       <clr-vertical-nav-group routerLinkActive="active" clrVerticalNavGroupExpanded='true'>
         <clr-icon shape="library" clrVerticalNavIcon></clr-icon>

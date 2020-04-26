@@ -1,10 +1,12 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { MediaObserver } from '@angular/flex-layout';
 
+import { SearchService } from '../search.service';
+
 @Component({
     selector: 'bs-layout',
     templateUrl: './BookStorageLayout.component.html',
-    styleUrls: ['./BookStorageLayout.component.css']
+    styleUrls: ['./BookStorageLayout.component.scss']
 })
 export class BookStorageLayoutComponent implements OnInit {
 
@@ -14,8 +16,11 @@ export class BookStorageLayoutComponent implements OnInit {
 
     constructor(
         private zone: NgZone,
-        public mediaObserver: MediaObserver) {
-            mediaObserver.asObservable().subscribe( (d) => console.log(d));
+        public mediaObserver: MediaObserver,
+        public searchService: SearchService) {
+        mediaObserver.media$.subscribe((d) => {
+            console.log('xxxxxx------------xxxxxxx-------',d);
+        });
     }
 
     ngOnInit() {

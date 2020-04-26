@@ -10,7 +10,7 @@
     "e2e": "ng e2e",
     "api": "cd api && npm run api",
     "api-sync": "cd api-sync && npm run api-sync",
-    "start": "cp -f ./src/environments/client.config.dev.js ./src/environments/client.config.js; ng serve --port 4201",
+    "start": "cp -f ./src/environments/client.config.dev.js ./src/environments/client.config.js; ng serve --port 4201 --host=0.0.0.0",
     "build": "cp -f ./src/environments/client.config.prod.js ./src/environments/client.config.js; ng build",
     "build:prod": "cp -f ./src/environments/client.config.prod.js ./src/environments/client.config.js; ng build --prod",
     "copy": "scp -rp ./dist/html/ datirium-art:/meteor/scidap-ui/; rm -rf ./dist",

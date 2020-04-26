@@ -14,6 +14,7 @@ import { Tracking } from '../../../lib/tracking';
 
 import { BooksService } from '../../books.service';
 import { mergeMap, switchMap } from 'rxjs/operators';
+import { SearchService } from '../../search.service';
 
 
 @Component({
@@ -30,7 +31,8 @@ export class BookShelfViewComponent extends Tracking implements OnInit {
         public booksService: BooksService,
         private zone: NgZone,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private searchService: SearchService
     ) {
         super();
         console.log('Constructor??');
@@ -51,6 +53,9 @@ export class BookShelfViewComponent extends Tracking implements OnInit {
                     }
                     if (justStarted) {
                         justStarted = false;
+                        if (query.get('search')) {
+                            this.searchService.searchTerm = query.get('search');
+                        }
                     } else {
                         this.booksService.pagination.pageIndex = 1;
                     }
@@ -63,6 +68,12 @@ export class BookShelfViewComponent extends Tracking implements OnInit {
                     this.books = d.data;
                     this.count = d.count;
                 });
+            });
+
+        this.tracked = this.searchService.searchStringChanged$
+            .subscribe((v) => {
+                console.log('search for:', v);
+                this.booksService.pagination.search(v); // = v;
             });
         // this.booksService.pagination.permSearch('recent.pdfOpenParams', 'page', true);
     }

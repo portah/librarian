@@ -38,16 +38,16 @@ $bookstorage-theme: mat-dark-theme($bookstorage-primary, $bookstorage-accent, $b
 
 /* You can add global styles to this file, and also import other style files */
 
-$fa-font-path: 'assets/fontawesome/webfonts/';
-@import 'assets/fontawesome/scss/fontawesome';
-@import 'assets/fontawesome/scss/duotone';
-@import 'assets/fontawesome/scss/solid';
-@import 'assets/fontawesome/scss/regular';
-@import 'assets/fontawesome/scss/light';
-@import 'assets/fontawesome/scss/brands';
+// $fa-font-path: 'assets/fontawesome/webfonts/';
+// @import 'assets/fontawesome/scss/fontawesome';
+// @import 'assets/fontawesome/scss/duotone';
+// @import 'assets/fontawesome/scss/solid';
+// @import 'assets/fontawesome/scss/regular';
+// @import 'assets/fontawesome/scss/light';
+// @import 'assets/fontawesome/scss/brands';
 
 
-@import "../node_modules/@clr/ui/src/dark-theme"; // Dark theme variables
+@import "~@clr/ui/src/dark-theme"; // Dark theme variables
 // @import "../node_modules/@clr/ui/src/main"; // Dark theme variables
 
 // @import "../node_modules/@clr/ui/src/utils/theme.dark.clarity"; // Dark theme variables

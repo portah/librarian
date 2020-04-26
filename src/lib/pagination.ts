@@ -116,6 +116,7 @@ export class SDPagination extends Tracking {
         // this._searchFields.forEach( f => {
         //     this._currentSearch[f] = searchTerm;
         // });
+        this.pageParamsChanged$.next();
         return this.reroute();
     }
 
