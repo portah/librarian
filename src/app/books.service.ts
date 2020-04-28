@@ -92,4 +92,12 @@ export class BooksService extends BaseService {
         this.promiseCall('mark/book/recent', location).catch(console.log);
     }
 
+    /**
+     * Recent book
+     */
+    setBookmark(location) {
+        this.promiseCall('mark/bookmark', location).catch(console.log);
+    }
+
+
 }

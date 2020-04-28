@@ -23,26 +23,42 @@ Meteor.methods({
             .pipe(
                 mergeMap((baseFolder: string) => observableFrom(walk(baseFolder, baseFolder, Meteor.settings.extensions))),
                 mergeMap((list: any[]) => observableFrom(list)),
-                mergeMap((fileInfo: BookFile) => {
+                mergeMap((fileInfo: BookFile): Observable<{ pdfBook: any, fileInfo: any }> => {
+                    this.unblock();
                     const filePath = `${fileInfo.root}/${fileInfo.dir}/${fileInfo.base}`;
-                    return observableFrom(fs.readFile(filePath))
-                        .pipe(map((file: any) => ({ file, fileInfo })));
-                }),
-                mergeMap(({ file, fileInfo }): Observable<{ pdfBook: any, fileInfo: any }> => {
+
                     const book = Books.findOne({ 'fileInfo.name': fileInfo.name });
                     if (book) {
+                        if (fileInfo.ext === '.pdf' && !book.outline) {
+                            observableFrom(fs.readFile(filePath))
+                                .pipe(
+                                    mergeMap((file) => {
+                                        return observableFrom(pdfParser(file, { page: 1 }))
+                                            .pipe(
+                                                map((pdfData: any) => {
+                                                    book.outline = pdfData.outline || [];
+                                                    return { pdfBook: book, fileInfo };
+                                                }));
+                                    })
+                                );
+                        }
                         return observableOf({ pdfBook: book, fileInfo });
-                    }
-                    if (fileInfo.ext === '.pdf') {
-                        return observableFrom(pdfParser(file))
+                    } else if (fileInfo.ext === '.pdf') {
+                        observableFrom(fs.readFile(filePath))
                             .pipe(
-                                map((pdfData: any) => ({ pdfBook: (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo }))
+                                mergeMap((file) => {
+                                    return observableFrom(pdfParser(file))
+                                        .pipe(
+                                            map((pdfData: any) => ({ pdfBook: (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo }))
+                                        );
+                                })
                             );
                     }
                     return observableOf({ pdfBook: null, fileInfo });
                 })
             )
             .subscribe(({ pdfBook, fileInfo }) => {
+                this.unblock();
                 if (!pdfBook) {
                     Logger.error('Unsupported extension:', fileInfo.ext);
                     return;
@@ -77,6 +93,8 @@ Meteor.methods({
                             Books.update({ _id: bookId }, { $set: pdfBook });
                             Books.update({ _id: bookId }, { $set: { fileInfo: pdfBook.fileInfo } });
                             Logger.debug(`Updated file info for ${pdfBook.title} & ${bookId}`, pdfBook.fileInfo);
+                        } else if (pdfBook.outline && !book.outline) {
+                            Books.update({ _id: bookId }, { $set: { outline: pdfBook.outline } });
                         }
                     } else {
 

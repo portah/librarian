@@ -5,6 +5,7 @@
 import { PDFDocumentProxy, version, getDocument } from 'pdfjs-dist';
 // import * as PDFJS from 'pdfjs-dist';
 import * as Canvas from 'canvas';
+import { Logger } from '../logger';
 
 const assert = require('assert').strict;
 
@@ -139,28 +140,54 @@ export async function PDF(dataBuffer: any, options?: any) {
     ret.info = metaData ? metaData.info : null;
     ret.metadata = metaData ? metaData.metadata : null;
 
+    try {
+        ret.outline = await doc.getOutline();
+
+    } catch (error) {
+        Logger.error(error);
+    }
+
     let counter = options.max <= 0 ? doc.numPages : options.max;
     counter = counter > doc.numPages ? doc.numPages : counter;
 
+    let onePage = options.page;
+
     ret.text = '';
 
-    for (let i = 1; i <= counter; i++) {
-        const pageText = await doc.getPage(i)
+    if (onePage) {
+        if (onePage > doc.numPages) {
+            onePage = doc.numPages;
+        }
+        if (onePage <= 0) {
+            onePage = 1;
+        }
+
+        const pageText = await doc.getPage(onePage)
             .then(async (pageData: any) => {
-                if (i === 1) {
-                    ret.imageBase64 = 'data:image/png;base64,' + await image_page(pageData);
-                }
+                ret.imageBase64 = 'data:image/png;base64,' + await image_page(pageData);
                 return options.pagerender(pageData);
             });
-        // .catch((err: any) => {
-        //     // todo log err using debug
-        //     // debugger;
-        //     return '';
-        // });
 
         ret.text = `${ret.text}\n\n${pageText}`;
-    }
 
+    } else {
+        for (let i = 1; i <= counter; i++) {
+            const pageText = await doc.getPage(i)
+                .then(async (pageData: any) => {
+                    if (i === 1) {
+                        ret.imageBase64 = 'data:image/png;base64,' + await image_page(pageData);
+                    }
+                    return options.pagerender(pageData);
+                });
+            // .catch((err: any) => {
+            //     // todo log err using debug
+            //     // debugger;
+            //     return '';
+            // });
+
+            ret.text = `${ret.text}\n\n${pageText}`;
+        }
+    }
     ret.numrender = counter;
     doc.destroy();
 

@@ -13,7 +13,7 @@ import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Location, LocationStrategy } from '@angular/common';
 
 import { pipe, Subject, fromEvent, merge, zip, of, combineLatest } from 'rxjs';
-import { switchMap, map, mergeMap, debounceTime, first, takeWhile, skipUntil, take, shareReplay } from 'rxjs/operators';
+import { switchMap, map, mergeMap, debounceTime, first, takeWhile, skipUntil, take, shareReplay, filter } from 'rxjs/operators';
 import { NgxExtendedPdfViewerComponent, IPDFViewerApplication, NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 
 import screenFull from 'screenfull';
@@ -89,6 +89,7 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
                 debounceTime(80),
                 takeWhile((v: any) => {
                     console.log('Recent location!', this.recentLocation, v.location);
+                    this.bookmarkLocation = v.location;
                     if (!this.recentLocation ||
                         (v.location && v.location.pageNumber === this.recentLocation.pageNumber
                             && v.location.scale === this.recentLocation.scale)) {
@@ -132,6 +133,8 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
     public bookData;
     public showPdfViewer = false;
     public recentLocation;
+    public bookmarkLocation;
+
     /**
      *
      * @param booksService
@@ -170,6 +173,7 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
                         take(1)
                     );
             }),
+            filter(({ params, book, query }: any) => !!book),
             mergeMap(({ params, book, query }: any) => {
                 console.log(book);
                 if (book.recent && !this.recentLocation) {
@@ -194,6 +198,7 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
         this.pdfViewer$.subscribe((v: any) => {
             if (v && v.location) {
                 console.log(v);
+                this.bookmarkLocation = v.location;
                 this.bookStatLocation(v.location);
                 this.booksService.setRecentBook({ _id: this.bookId, ...v.location });
             }
@@ -276,6 +281,8 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
      * @param event
      */
     bookmarkAdd(event) {
+        console.log(this.bookmarkLocation);
+        this.booksService.setBookmark({ _id: this.bookId, ...this.bookmarkLocation });
         // console.log(new URL(event).hash);
     }
 

@@ -153,6 +153,7 @@ export class ScrapePDFFile extends ScrapeFile {
 
 
         const publisher: Publisher | undefined = this.publisher();
+        const isbn = this.isbn();
 
         if (!title && pdfData.info.Title) {
             title = pdfData.info.Title;
@@ -171,11 +172,12 @@ export class ScrapePDFFile extends ScrapeFile {
         const pdfBook: Book = {} as Book;
         pdfBook.title = title;
         pdfBook.authors = authors;
-        pdfBook.isbn = this.isbn();
+        pdfBook.isbn = isbn;
         pdfBook.numPages = pdfData.numPages;
         pdfBook.description = description;
         pdfBook.publisher = publisher;
         pdfBook.fileInfo = fileInfo;
+        pdfBook.outline = pdfData.outline || [];
         const { text, imageBase64, ...printData } = pdfData;
         Logger.debug('PDF Book: ', pdfBook, printData);
         pdfBook.imageBase64 = imageBase64;
