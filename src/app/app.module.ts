@@ -43,11 +43,17 @@ import { BookShelfViewComponent } from './BookShelf/BookShelfView/BookShelfView.
 
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 export const MD_MATERIAL_MODULES: Array<any> = [
    MatPaginatorModule,
    MatIconModule,
    FlexLayoutModule,
+   MatSidenavModule,
+   MatTabsModule,
+   MatProgressBarModule,
    OverlayModule
 ];
 

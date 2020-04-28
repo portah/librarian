@@ -1,0 +1,33 @@
+:host {
+  width: 100%;
+  height: 100%;
+}
+
+.card-img {
+  height: 190px !important;
+  //     width: 150px;
+}
+
+// .shelf {
+//     overflow-y: scroll;
+// }
+
+.card {
+  width: 150px;
+}
+
+// div[fxLayout="column"] {
+//   width: 100%;
+//   height: 100%;
+
+// }
+
+div[fxLayout="column"]>div[fxFlex] {
+  flex: 1 0 auto !important;
+}
+
+mat-paginator {
+  background: none;
+  margin-left: -10px;
+  margin-right: -10px;
+}

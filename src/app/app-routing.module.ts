@@ -24,13 +24,13 @@ const routes: Routes = [
                 ]
             },
             {
-                path: 'book/:id', component: BookViewComponent
-            },
-            {
                 path: 'filemanager', component: BookFileManagerComponent
             },
             { path: '', redirectTo: 'bookshelf', pathMatch: 'full' }
         ]
+    },
+    {
+        path: 'book/:id', component: BookViewComponent
     }
 
 ];

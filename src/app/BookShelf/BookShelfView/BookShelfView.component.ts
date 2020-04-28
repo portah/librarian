@@ -20,7 +20,7 @@ import { SearchService } from '../../search.service';
 @Component({
     selector: 'bs-book-shelf-view',
     templateUrl: './BookShelfView.component.html',
-    styleUrls: ['./BookShelfView.component.css']
+    styleUrls: ['./BookShelfView.component.scss']
 })
 export class BookShelfViewComponent extends Tracking implements OnInit {
 

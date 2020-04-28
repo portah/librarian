@@ -40,16 +40,12 @@ $bookstorage-theme: mat-dark-theme($bookstorage-primary, $bookstorage-accent, $b
 
 // $fa-font-path: 'assets/fontawesome/webfonts/';
 // @import 'assets/fontawesome/scss/fontawesome';
-// @import 'assets/fontawesome/scss/duotone';
-// @import 'assets/fontawesome/scss/solid';
 // @import 'assets/fontawesome/scss/regular';
-// @import 'assets/fontawesome/scss/light';
 // @import 'assets/fontawesome/scss/brands';
 
 
 @import "~@clr/ui/src/dark-theme"; // Dark theme variables
 // @import "../node_modules/@clr/ui/src/main"; // Dark theme variables
-
 // @import "../node_modules/@clr/ui/src/utils/theme.dark.clarity"; // Dark theme variables
 
 // Your Application Theme File

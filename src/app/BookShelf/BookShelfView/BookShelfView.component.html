@@ -1,10 +1,11 @@
-<div fxLayout="column" fxLayoutGap="10px" fxFlexFill>
-  <div fxLayout="row wrap" fxLayoutGap="10px" fxLayoutAlign="start start" fxFlex style="overflow-y: scroll;">
-    <a *ngFor="let book of books; let i=index" routerLink="/book/{{book._id}}" class="card clickable" style="width: 130px;">
+<div fxLayout="column" fxLayoutGap="15px">
+  <div fxLayout="row wrap" fxLayoutGap="15px" fxLayoutGap.lt-sm="20px" fxLayoutAlign="start start" fxLayoutAlign.lt-sm="center start" fxFlex class="shelf">
+
+    <a *ngFor="let book of books;" routerLink="/book/{{book._id}}" class="card clickable">
       <!-- <div class="card-header">
             {{book.title| shorten: 8: '...'}}
           </div> -->
-      <div class="card-img" style="height: 190px;">
+      <div class="card-img">
         <img [src]="book.imageBase64" fxFill>
       </div>
       <!-- <div class="card-block"> -->
@@ -13,14 +14,16 @@
       <!-- </div> -->
       <!-- </div> -->
     </a>
-    <!-- <router-outlet></router-outlet> -->
-    <!-- <div fxFlex>&nbsp;&nbsp;</div> -->
+    <div>&nbsp;</div>
   </div>
-  <mat-paginator fxFlex="30px" style="background: none;"
+  <div>&nbsp;</div>
+  <mat-paginator
     [length]="count"
     [pageSize]="booksService.pagination.pageSize"
     [pageSizeOptions]="[20, 40, 100, 200]"
     [pageIndex]="booksService.pagination._page-1"
     (page)="booksService.pagination.matPagination = $event">
   </mat-paginator>
+  <div>&nbsp;</div>
+  <div>&nbsp;</div>
 </div>
