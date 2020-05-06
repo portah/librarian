@@ -13,7 +13,7 @@ import {
 import { Tracking } from '../../../lib/tracking';
 
 import { BooksService } from '../../books.service';
-import { mergeMap, switchMap } from 'rxjs/operators';
+import { mergeMap, switchMap, debounceTime } from 'rxjs/operators';
 import { SearchService } from '../../search.service';
 
 
@@ -71,6 +71,7 @@ export class BookShelfViewComponent extends Tracking implements OnInit {
             });
 
         this.tracked = this.searchService.searchStringChanged$
+            .pipe(debounceTime(1000))
             .subscribe((v) => {
                 console.log('search for:', v);
                 this.booksService.pagination.search(v); // = v;
