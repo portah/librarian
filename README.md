@@ -1,4 +1,10 @@
-# Bookstorage
+# Librarian
+
+## The back end
+
+Is meteor based so instructions
+
+## The front end
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.2.
 
