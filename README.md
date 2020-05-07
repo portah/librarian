@@ -27,8 +27,7 @@ For now, backend can walk trough the directory, find all the pdfs, use NLP to pr
 
 PDF reader is powered by [ngx-extended-pdf-viewer](https://github.com/stephanrauh/ngx-extended-pdf-viewer) which wraps Mozilla PDFjs into angular. For now librarian can save book's latest position: page, zoom, view, rotation and restore it when opened again. Bookmarks are coming,
 
-<img src="doc/bookv.png" width="50%"/><img src="doc/bookvo.png" width="50%"/>
-
+![](doc/bookv.png)
 
 ## Development
 
