@@ -1,0 +1,5 @@
+{
+  "walkingDirs": ["/Users/porter/Books"],
+  "extensions": [".pdf", ".epub"],
+  "cors_package": true
+}
