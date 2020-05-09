@@ -11,7 +11,7 @@ const isbnRegExp = new RegExp('^(?:ISBN(?:-1[03])?:?\ )?(?=[0-9X]{10}$|(?=(?:[0-
     '(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)(?:97[89][-\ ]?)?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9X]$');
 
 
-const stopWords = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'aren\'t', 'as', 'at',
+export const stopWords = ['a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'aren\'t', 'as', 'at',
     'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both', 'but', 'by',
     'can\'t', 'cannot', 'could', 'couldn\'t',
     'did', 'didn\'t', 'do', 'does', 'doesn\'t', 'doing', 'don\'t', 'down', 'during',
@@ -66,18 +66,25 @@ export class ScrapeFile {
 
     // take PUBLISHER
 
-    protected publisher(): Publisher | undefined {
+    protected publisher(publisherParam?: string): Publisher | undefined {
         let publisher: Publisher | undefined;
+        let publisherFromParam: Publisher | undefined;
         if (this.publishers && this.publishers.length > 0) {
             let tmpPublisher: Publisher | undefined;
             let publisherWords = 0;
             const publisherIndices: number[] = [];
+            // const publisherParamTokenize = publisherParam ? this.aggressiveTokenizer.tokenize(publisherParam.toLowerCase()) : [];
             this.fileNameTokenized.find((word: string, index: number) => {
                 // search for publisher
                 publisher = this.publishers?.find((p: Publisher) => {
 
                     const tmpPublisherWords = this.aggressiveTokenizer.tokenize(p.title.toLowerCase());
 
+                    if (publisherParam && p.title.toLowerCase() === publisherParam.toLowerCase()) {
+                        //  && tmpPublisherWords.includes(publisherParam.toLowerCase())) {
+                        // publisherParamTokenize
+                        publisherFromParam = p;
+                    }
                     if (tmpPublisherWords.includes(word.toLowerCase())) {
                         publisherWords = publisherWords + 1;
                         if (tmpPublisherWords.length !== publisherWords) {
@@ -109,6 +116,9 @@ export class ScrapeFile {
                 }
                 return false;
             });
+        }
+        if (publisherFromParam) {
+            return publisherFromParam;
         }
         return publisher;
     }

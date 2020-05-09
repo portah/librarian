@@ -43,6 +43,9 @@ export interface Book {
 
     imageBase64?: string;
 
+    epub?: any;
+    pdf?: any;
+
     url: string;
 
     nlpTags?: string[];

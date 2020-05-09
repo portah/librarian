@@ -9,7 +9,7 @@ import { Logger } from '../logger';
 
 const assert = require('assert').strict;
 
-class NodeCanvasFactory {
+export class NodeCanvasFactory {
     create(width: number, height: number) {
         assert(width > 0 && height > 0, 'Invalid canvas size');
         const canvas = Canvas.createCanvas(width, height);
