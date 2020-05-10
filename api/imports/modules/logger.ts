@@ -11,22 +11,30 @@ export function createLogger(options?: any) {
 
     options = options || {};
 
-    const stream: any = {};
+    const streams: any[] = [];
     let conf: any = { name: 'Bookstorage Server' };
 
     if (Meteor.isServer) {
         if (!!Meteor.settings['logFile'] && Meteor.settings['logFile'].length > 0) {
-            stream.path = Meteor.settings['logFile'];
-        } else if (Meteor.isProduction) {
-            stream.path = './bookstorage.log';
+            streams.push({
+                path: Meteor.settings['logFile']
+            });
         } else {
-            stream.stream = process.stdout;
+            streams.push({
+                path: './bookstorage.log'
+            });
+        }
+
+        if (!Meteor.isProduction) {
+            streams.push({
+                stream: process.stdout
+            });
         }
         const logLevel = Meteor.settings['logLevel'] || 'debug';
         conf = {
             ...conf,
-            src:  logLevel === 'debug',
-            streams: [stream],
+            src: logLevel === 'debug',
+            streams,
             level: logLevel
         };
     } else {
@@ -37,7 +45,7 @@ export function createLogger(options?: any) {
         };
     }
 
-    loggerSingleton = bunyan.createLogger({...conf, ...options});
+    loggerSingleton = bunyan.createLogger({ ...conf, ...options });
     return loggerSingleton;
 }
 
