@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { BookStorageLayoutComponent } from './BookStorageLayout/BookStorageLayout.component';
 import { BookViewComponent } from './BookView/BookView.component';
+import { PdfViewComponent } from './PdfView/PdfView.component';
 import { BookFileManagerComponent } from './BookFileManager/BookFileManager.component';
 
 import { BookShelfComponent } from './BookShelf/BookShelf.component';
@@ -24,14 +25,18 @@ const routes: Routes = [
                 ]
             },
             {
+                path: 'book/:id', component: BookViewComponent
+            },
+
+            {
                 path: 'filemanager', component: BookFileManagerComponent
             },
             { path: '', redirectTo: 'bookshelf', pathMatch: 'full' }
         ]
     },
     {
-        path: 'book/:id', component: BookViewComponent
-    }
+        path: 'pdfbook/:id', component: PdfViewComponent
+    },
 
 ];
 

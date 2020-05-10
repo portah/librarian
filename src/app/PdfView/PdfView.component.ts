@@ -15,7 +15,7 @@ import { Location, LocationStrategy } from '@angular/common';
 import { pipe, Subject, fromEvent, merge, zip, of, combineLatest } from 'rxjs';
 import { switchMap, map, mergeMap, debounceTime, first, takeWhile, skipUntil, take, shareReplay, filter } from 'rxjs/operators';
 import { NgxExtendedPdfViewerComponent, IPDFViewerApplication, NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
-import { DomSanitizer } from '@angular/platform-browser';
+
 import screenFull from 'screenfull';
 
 import { environment } from '../../environments/environment';
@@ -23,13 +23,13 @@ import { BooksService } from '../books.service';
 import { BaseComponent } from '../../lib/base.component';
 
 @Component({
-    selector: 'app-BookView',
-    templateUrl: './BookView.component.html',
-    styleUrls: ['./BookView.component.scss'],
+    selector: 'app-pdf-view',
+    templateUrl: './PdfView.component.html',
+    styleUrls: ['./PdfView.component.scss'],
     encapsulation: ViewEncapsulation.None,
     providers: []
 })
-export class BookViewComponent extends BaseComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PdfViewComponent extends BaseComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public pdfViewer$ = new Subject();
     public PDFViewerApplication: IPDFViewerApplication | any;
@@ -38,11 +38,99 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
     /**
      *
      */
+    @ViewChild('pdfViewer', { static: false })
+    public set pdfViewer(pdf: NgxExtendedPdfViewerComponent) {
+        if (!pdf) {
+            return;
+        }
+        this.ngxPDFViewerComponent = pdf;
+        this.ngxPDFViewerComponent.primaryMenuVisible = false;
+
+        // TODO: Put into separate function?
+        const viewReady$ = this.ngxPDFViewerComponent.pdfLoaded
+            .pipe(
+                mergeMap(() => {
+                    this.PDFViewerApplication = (window as any).PDFViewerApplication;
+                    console.log('ngxPDFViewerComponent.pdfLoaded?', this.PDFViewerApplication);
+                    return fromEvent(this.PDFViewerApplication.eventBus, 'updateviewarea');
+                }),
+                shareReplay(1)
+            );
+        const skipUntil$ = new Subject();
+
+        this.tracked = viewReady$
+            .pipe(
+                skipUntil(skipUntil$),
+                debounceTime(500)
+            )
+            .subscribe(this.pdfViewer$);
+
+        /**
+         *  OUTLINE
+         */
+        viewReady$
+            .pipe(
+                mergeMap(() => {
+                    return fromEvent(this.PDFViewerApplication.eventBus, 'outlineloaded');
+                }),
+                take(1)
+            ).subscribe(
+                (d) => {
+                    console.log(d, this.PDFViewerApplication.pdfOutlineViewer.outline);
+                    this.PDFViewerApplication.pdfOutlineViewer.toggleOutlineTree();
+                }
+            );
+
+        /**
+         *  ZOOM INTO RECENT and start event loop
+         */
+        viewReady$
+            .pipe(
+                debounceTime(80),
+                takeWhile((v: any) => {
+                    console.log('Recent location!', this.recentLocation, v.location);
+                    this.bookmarkLocation = v.location;
+                    if (!this.recentLocation ||
+                        (v.location && v.location.pageNumber === this.recentLocation.pageNumber
+                            && v.location.scale === this.recentLocation.scale)) {
+                        this.loading = false;
+                        skipUntil$.next();
+                        return false;
+                    }
+                    return true;
+                }),
+            )
+            .subscribe((v) => {
+                console.log(v);
+
+                // this.PDFViewerApplication.initialBookmark = this.recentLocation.pdfOpenParams.substring(1);
+                // TODO: remove in the future, put into next call
+                this.ngxPDFViewerComponent.rotation = this.recentLocation.rotation;
+                this.ngxPDFViewerComponent.zoom = this.recentLocation.scale;
+
+                let scale: any;
+                if (!isNaN(this.recentLocation.scale)) {
+                    scale = +this.recentLocation.scale / 100.0;
+                } else {
+                    scale = this.recentLocation.scale;
+                }
+                this.PDFViewerApplication.pdfViewer.scrollPageIntoView({
+                    pageNumber: this.recentLocation.pageNumber,
+                    destArray: [
+                        null,
+                        { name: "XYZ" },
+                        this.recentLocation.left,
+                        this.recentLocation.top,
+                        scale
+                    ]
+                });
+            });
+    }
 
 
     public fileUrl: string;
     public bookId;
-    public book;
+    public bookData;
     public showPdfViewer = false;
     public recentLocation;
     public bookmarkLocation;
@@ -61,8 +149,7 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
         private router: Router,
         private locationStrategy: LocationStrategy,
         private elRef: ElementRef,
-        private location: Location,
-        public sanitizer: DomSanitizer
+        private location: Location
     ) {
 
         super();
@@ -91,17 +178,23 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
                 console.log(book);
                 if (book.recent && !this.recentLocation) {
                     this.recentLocation = book.recent;
+                    this.bookStatLocation(book.recent);
                 }
-                return this.booksService.file$(book.fileInfo._id)
-                    .pipe(
-                        map((file) => ({ params, book, file })),
-                    );
+                let fileId = book.fileInfo.ext === '.pdf' ? book.fileInfo._id : book.pdf?.fileInfo._id;
+                if (!fileId) {
+                    return of(({ params, book, file: null }));
+                } else {
+                    return this.booksService.file$(fileId)
+                        .pipe(
+                            map((file) => ({ params, book, file })),
+                        );
+                }
             })
         ).subscribe(({ params, book, file }: any) => {
             console.log(file, file.link());
 
             this.zone.run(() => {
-                this.book = book;
+                this.bookData = book;
                 this.fileUrl = file.link();
                 this.showPdfViewer = true;
             });

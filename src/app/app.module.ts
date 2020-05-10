@@ -37,6 +37,7 @@ import { SearchService } from './search.service';
 
 import { BookStorageLayoutComponent } from './BookStorageLayout/BookStorageLayout.component';
 import { BookViewComponent } from './BookView/BookView.component';
+import { PdfViewComponent } from './PdfView/PdfView.component';
 import { BookFileManagerComponent } from './BookFileManager/BookFileManager.component';
 import { BookShelfComponent } from './BookShelf/BookShelf.component';
 import { BookShelfViewComponent } from './BookShelf/BookShelfView/BookShelfView.component';
@@ -69,6 +70,7 @@ export const BreakPointsProvider = {
       BookStorageLayoutComponent,
       BookShelfViewComponent,
       BookViewComponent,
+      PdfViewComponent,
       BookFileManagerComponent,
       BookShelfComponent
    ],

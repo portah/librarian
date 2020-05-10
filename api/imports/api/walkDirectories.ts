@@ -42,26 +42,29 @@ function addFile(bookId: string, fileInfo: any) {
 /**
  *
  */
-function checkUpdate(book: any, { authors, description, imageBase64, outline }) {
+function checkUpdate(book: any, { authors, description, imageBase64, outline, numPages }) {
+
+    let setB = {};
+
     if (!book.authors || book.authors.length === 0) {
-        Books.update({ _id: book._id }, {
-            $set: { authors }
-        });
+        setB = { ...setB, authors };
     }
-    if (!book.description) {
-        Books.update({ _id: book._id }, {
-            $set: { description }
-        });
+    if (!book.description && description) {
+        setB = { ...setB, description };
     }
-    if (!book.imageBase64) {
-        Books.update({ _id: book._id }, {
-            $set: { imageBase64 }
-        });
+    if (!book.imageBase64 && imageBase64) {
+        setB = { ...setB, imageBase64 };
+    }
+    if (!book.outline && outline) {
+        setB = { ...setB, outline };
+    }
+    if (!book.numPages && numPages) {
+        setB = { ...setB, numPages };
     }
 
-    if (!book.outline) {
+    if (Object.keys(setB).length > 0) {
         Books.update({ _id: book._id }, {
-            $set: { outline }
+            $set: { ...setB }
         });
     }
 
@@ -148,7 +151,7 @@ Meteor.methods({
                 }
 
                 if (book) {
-                    const { title, authors, isbn, description, publisher, outline, imageBase64, nlpTags, nlpTerms } = epubBook || pdfBook;
+                    const { title, authors, isbn, description, publisher, outline, imageBase64, nlpTags, nlpTerms, numPages } = epubBook || pdfBook;
                     if (epubBook && book.fileInfo.ext === '.pdf') {
 
                         // alternatives
@@ -186,7 +189,7 @@ Meteor.methods({
                             });
                         }
                     }
-                    checkUpdate(book, { description, authors, imageBase64, outline });
+                    checkUpdate(book, { description, authors, imageBase64, outline, numPages });
 
                 } else {
                     /**

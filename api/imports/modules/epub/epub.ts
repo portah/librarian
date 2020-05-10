@@ -102,7 +102,13 @@ export class EPUB {
                 return this.getImage(cover);
             }
         } else {
-            const cover = this.epub.guide.find((g: any) => {
+
+            let cover = Object.keys(this.epub.manifest).find((k: any) => this.epub.manifest[k].properties?.startsWith('cover-image'));
+            if (cover) {
+                return this.getImage(cover);
+            }
+
+            cover = this.epub.guide.find((g: any) => {
                 return g.type === 'cover';
             });
             if (cover) {
