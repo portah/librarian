@@ -2,6 +2,8 @@ import { TfIdf, PorterStemmer, AggressiveTokenizer } from 'natural';
 
 import { Publisher } from '../publishers';
 import { Book, Books } from '/imports/api/books';
+import { EPUB } from './epub';
+
 import { ScrapeFile, stopWords } from '../pdf/scrapePdfFile';
 
 import { Logger } from '../logger';
@@ -62,7 +64,12 @@ export class ScrapeEpubFile extends ScrapeFile {
         epubBook.outline = epubData.toc || [];
         const { text, imageBase64, epub, ...printData } = epubData;
         Logger.debug('EPUB Book: ', epubBook, printData);
-        epubBook.imageBase64 = imageBase64;
+        if (!imageBase64) {
+            epubBook.imageBase64 = EPUB.getCoverFromText({ title, publisher: publisher?.title });
+        } else {
+            epubBook.imageBase64 = imageBase64;
+        }
+
 
 
         const tfIdf = new TfIdf();

@@ -7,6 +7,10 @@ import { map, mergeMap } from 'rxjs/operators';
 import { NodeCanvasFactory } from '../pdf/pdfparse';
 import { Logger } from '../logger';
 
+
+const maxWidth = 640;
+const maxHeight = maxWidth * 1.55;
+
 export interface TocElement {
     level: number;
     order: number;
@@ -52,6 +56,24 @@ export class EPUB {
         this.epub.parse();
     }
 
+    static getCoverFromText({ title = '', year = '', publisher = '' }) {
+        const { canvas, context } = (new NodeCanvasFactory()).create(maxWidth, maxHeight);
+
+        // On first page
+        context.font = '22px Helvetica';
+        if (title) {
+            context.fillText(title, 50, 100, maxWidth - 50);
+        }
+
+        if (publisher) {
+            context.fillText(publisher, maxWidth / 2 - 30, 500, 200);
+        }
+
+        if (year) {
+            context.fillText(year, maxWidth / 2 - 30, 400, 600);
+        }
+        return canvas.toDataURL('image/png');
+    }
 
     // private events(event: string): Promise<any> {
     //     return new Promise((resolve, reject) => {
@@ -60,12 +82,6 @@ export class EPUB {
     //         });
     //     });
     // }
-
-    print(): Promise<any> {
-        // Logger.debug(this.epub.metadata);
-        Logger.debug(this.epub);
-        return Promise.resolve();
-    }
 
     getChapter(chapter: any) {
         return new Promise((resolve) => this.epub.getChapter(chapter.id, (err: any, text: string) => {
@@ -92,38 +108,32 @@ export class EPUB {
     }
 
     async getCover() {
-        if (this.epub.metadata.cover) {
-            if (this.epub.manifest[this.epub.metadata.cover]) {
-                return this.getImage(this.epub.metadata.cover);
-            }
+        if (this.epub.metadata.cover && this.epub.manifest[this.epub.metadata.cover]) {
+            return this.getImage(this.epub.metadata.cover);
+        }
 
-            const cover = Object.keys(this.epub.manifest).find((k: any) => this.epub.manifest[k].href?.endsWith(this.epub.metadata.cover));
-            if (cover) {
-                return this.getImage(cover);
-            }
-        } else {
+        let cover = Object.keys(this.epub.manifest).find((k: any) => this.epub.manifest[k].href?.endsWith(this.epub.metadata.cover));
+        if (!cover) {
+            cover = Object.keys(this.epub.manifest).find((k: any) => this.epub.manifest[k].properties?.startsWith('cover-image'));
+        }
+        if (cover) {
+            return this.getImage(cover);
+        }
 
-            let cover = Object.keys(this.epub.manifest).find((k: any) => this.epub.manifest[k].properties?.startsWith('cover-image'));
-            if (cover) {
-                return this.getImage(cover);
-            }
-
-            cover = this.epub.guide.find((g: any) => {
-                return g.type === 'cover';
-            });
-            if (cover) {
-                Logger.debug(cover);
-            }
+        cover = this.epub.guide.find((g: any) => {
+            return g.type === 'cover';
+        });
+        if (cover) {
+            Logger.debug(cover);
         }
         return Promise.resolve(null);
     }
+
     /**
      *
      * @param imgId
      */
-    getImage(imgId: any): Promise<any> {
-        const maxWidth = 640;
-        const maxHeight = maxWidth * 1.55;
+    async getImage(imgId: any): Promise<any> {
         return new Promise((resolve) => {
             this.epub.getImage(imgId, (e: any, d: any) => {
                 if (e) {
@@ -140,7 +150,7 @@ export class EPUB {
             });
         }).then((image: any) => {
             if (!image) {
-                return Promise.resolve(null);
+                return null;
             }
             let ratio = 1;
             if (image.width > maxWidth) { // need to scale
@@ -155,7 +165,7 @@ export class EPUB {
                 0, 0, image.width, image.height,
                 0, 0, canvas.width, canvas.height
             );
-            return Promise.resolve(canvas.toDataURL('image/png'));
+            return canvas.toDataURL('image/png');
         });
     }
 
@@ -166,7 +176,9 @@ export class EPUB {
     epubParse() {
         return observableFrom(this.epubReady).pipe(
             mergeMap((epub: EPUBJS) => {
-                Logger.debug(epub);
+                Logger.info(epub.metadata);
+                Logger.debug(epub.manifest);
+                Logger.debug(epub.toc);
                 return observableFrom(this.getCover()).pipe(
                     map((imageBase64) => ({
                         imageBase64,
@@ -187,27 +199,3 @@ export class EPUB {
     }
 
 }
-
-
-
-// export function epubParse(epubfile: string, ) {
-//     const imagewebroot = '/images';
-//     const chapterwebroot = '/chapter';
-
-//     const epub = new EPub(epubfile, imagewebroot, chapterwebroot);
-
-//     epub.on('end', function () {
-//         // epub is now usable
-//         Logger.debug(epub.metadata.title);
-//         Logger.debug(epub);
-//         // epub.getChapter("chapter_id", function(err, text){});
-
-//         // epub.getImage('cover-image', (err: any, data: Buffer) => {
-//         //     if (err) { Logger.error(err); }
-//         //     if (data) {
-//         //         Logger.debug(data.toString('base64'));
-//         //     }
-//         // });
-//     });
-//     epub.parse();
-// }

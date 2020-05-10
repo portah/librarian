@@ -4,8 +4,8 @@ import { check } from 'meteor/check';
 
 import { promises as fs } from 'fs';
 
-import { of as observableOf, Observable, from as observableFrom, merge } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { of as observableOf, Observable, from as observableFrom, merge, Subscriber, Subject } from 'rxjs';
+import { map, mergeMap, switchMap, delayWhen } from 'rxjs/operators';
 
 import { Publishers, Publisher } from '../modules/publishers';
 import { BookFile, Books, Book } from '/imports/api/books';
@@ -15,6 +15,8 @@ import { FilesUpload } from '/imports/api/ostrioFiles';
 
 
 const uniqName = true;
+
+const bound = Meteor.bindEnvironment(callback => callback());
 
 /**
  *
@@ -75,15 +77,25 @@ function checkUpdate(book: any, { authors, description, imageBase64, outline, nu
 Meteor.methods({
     'walk/folders': function (baseFolders: any[]) {
 
+        const makeSequence = new Subject();
         check(baseFolders, [String]);
-        this.unblock();
         const publishers: Publisher[] = Publishers.find().fetch();
+        const globalList: any[] = [];
         observableFrom(baseFolders)
             .pipe(
                 mergeMap((baseFolder: string) => observableFrom(walk(baseFolder, baseFolder, Meteor.settings.extensions))),
-                mergeMap((list: any[]) => observableFrom(list)),
-                mergeMap((fileInfo: BookFile): Observable<{ pdfBook?: any, fileInfo: any, epubBook?: any }> => {
-                    this.unblock();
+                mergeMap((list: any[]): Observable<any> => {
+
+                    if (list && list.length > 0) {
+                        globalList.push(...list);
+                        Logger.info(globalList);
+                        Meteor.setTimeout(() => {
+                            makeSequence.next(globalList.shift());
+                        }, 1000);
+                    }
+                    return makeSequence;
+                }),
+                switchMap((fileInfo: BookFile): Observable<{ pdfBook?: any, fileInfo: any, epubBook?: any }> => {
                     const filePath = `${fileInfo.root}/${fileInfo.dir}/${fileInfo.base}`;
 
                     let book: Book | any;
@@ -100,9 +112,9 @@ Meteor.methods({
                         });
                     }
 
-                    if (fileInfo.ext === '.pdf') {
-                        if (book && (book.fileInfo.ext === '.pdf' || book.epub)) {
-                            return observableOf({ pdfBook: book, fileInfo });
+                    if (fileInfo.ext === '.pdf') { // Working on .pdf file on disk
+                        if (book && (book.fileInfo.ext === '.pdf' || book.pdf)) {
+                            return observableOf({ fileInfo }); // skip, any updates in subscription
                         } else {
                             return observableFrom(fs.readFile(filePath))
                                 .pipe(
@@ -114,25 +126,28 @@ Meteor.methods({
                                     })
                                 );
                         }
-                    } else
-                        if (fileInfo.ext === '.epub') {
-                            if (book && (book.fileInfo.ext === '.epub' || book.pdf)) {
-                                return observableOf({ epubBook: book, fileInfo });
-                            } else {
-                                return (new epubParser(filePath))
-                                    .epubParse()
-                                    .pipe(
-                                        map((epubData: any) => ({ pdfBook: null, epubBook: (new ScrapeEpubFile(epubData, fileInfo, publishers)).scrapeEpubFile(), fileInfo }))
-                                    );
-                            }
+                    }
+                    if (fileInfo.ext === '.epub') {
+                        if (book && (book.fileInfo.ext === '.epub' || book.epub)) {
+                            return observableOf({ fileInfo }); // skip, any updates in subscription
+                        } else {
+                            return (new epubParser(filePath))
+                                .epubParse()
+                                .pipe(
+                                    map((epubData: any) => ({ epubBook: (new ScrapeEpubFile(epubData, fileInfo, publishers)).scrapeEpubFile(), fileInfo }))
+                                );
                         }
+                    }
                     return observableOf({ pdfBook: null, epubBook: null, fileInfo });
                 })
             )
             .subscribe(({ pdfBook, fileInfo, epubBook }) => {
-                this.unblock();
                 if (!pdfBook && !epubBook) {
-                    Logger.error('Unsupported extension:', fileInfo.ext);
+                    Logger.error('Unsupported extension or skip because already exists:', fileInfo.ext);
+                    if (globalList.length > 0) {
+                        makeSequence.next(globalList.shift());
+                        this.unblock();
+                    }
                     return;
                 }
 
@@ -195,12 +210,17 @@ Meteor.methods({
                     /**
                      *      NO BOOK RECORD in MONGODB
                      */
-
                     const bookId = Books.insert(pdfBook || epubBook);
                     fileInfo._id = addFile(bookId, fileInfo);
                     Books.update({ _id: bookId }, { $set: { fileInfo } });
                     Logger.info((pdfBook || epubBook).title, bookId, fileInfo, fileInfo._id);
 
+                }
+                if (globalList.length > 0) {
+                    Meteor.setTimeout(() => {
+                        makeSequence.next(globalList.shift());
+                    }, 1000);
+                    this.unblock();
                 }
             });
     }
