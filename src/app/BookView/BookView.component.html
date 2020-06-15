@@ -12,7 +12,7 @@
           open pdf
         </button>
         <div fxFlex></div>
-        <button [disabled]="true" class="btn btn-primary" style="margin-right: 0;">
+        <button [disabled]="!(book?.fileInfo.ext === '.epub' || book?.epub?.fileInfo.ext === '.epub')" routerLink="/epubbook/{{book?._id}}" class="btn btn-primary" style="margin-right: 0;">
           <clr-icon shape="book" title="epub"></clr-icon>
           open epub
         </button>

@@ -1,5 +1,5 @@
 {
-  "walkingDirs": ["/Users/porter/Books"],
+  "walkingDirs": ["/Users/porter/Books/test"],
   "extensions": [".pdf", ".epub"],
   "cors_package": true
 }

@@ -52,7 +52,13 @@ export class EPUB {
 
     constructor(public epubfile: string) {
         this.epub = new EPub(this.epubfile, this.imagewebroot, this.chapterwebroot);
-        this.epubReady = new Promise((resolve) => this.epub.on('end', () => resolve(this.epub)));
+        this.epubReady = new Promise((resolve) => {
+            this.epub.on('end', () => resolve(this.epub));
+            this.epub.on('error', (error) => {
+                Logger.error(`Error in ${this.epubfile}`, error);
+                resolve(null);
+            });
+        });
         this.epub.parse();
     }
 
@@ -176,6 +182,9 @@ export class EPUB {
     epubParse() {
         return observableFrom(this.epubReady).pipe(
             mergeMap((epub: EPUBJS) => {
+                if (!epub) {
+                    return observableOf(null);
+                }
                 Logger.info(epub.metadata);
                 Logger.debug(epub.manifest);
                 Logger.debug(epub.toc);
@@ -191,6 +200,9 @@ export class EPUB {
                 );
             }),
             mergeMap((result) => {
+                if (!result) {
+                    return observableOf(null);
+                }
                 return observableFrom(this.getText()).pipe(
                     map((text) => ({ text, ...result }))
                 );

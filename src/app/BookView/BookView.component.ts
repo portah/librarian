@@ -12,8 +12,8 @@ import {
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Location, LocationStrategy } from '@angular/common';
 
-import { pipe, Subject, fromEvent, merge, zip, of, combineLatest } from 'rxjs';
-import { switchMap, map, mergeMap, debounceTime, first, takeWhile, skipUntil, take, shareReplay, filter } from 'rxjs/operators';
+import { pipe, Subject, fromEvent, merge, zip, of, combineLatest, from} from 'rxjs';
+import { switchMap, map, mergeMap, debounceTime, first, takeWhile, skipUntil, take, shareReplay, filter, reduce } from 'rxjs/operators';
 import { NgxExtendedPdfViewerComponent, IPDFViewerApplication, NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 import { DomSanitizer } from '@angular/platform-browser';
 import screenFull from 'screenfull';
@@ -66,8 +66,6 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
     ) {
 
         super();
-
-
     }
 
     /**

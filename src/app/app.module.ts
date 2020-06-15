@@ -38,6 +38,8 @@ import { SearchService } from './search.service';
 import { BookStorageLayoutComponent } from './BookStorageLayout/BookStorageLayout.component';
 import { BookViewComponent } from './BookView/BookView.component';
 import { PdfViewComponent } from './PdfView/PdfView.component';
+import { AngularEpubViewerComponent } from './EpubView/EpubViewer/EpubViewer.component';
+import { EpubViewComponent } from './EpubView/EpubView.component';
 import { BookFileManagerComponent } from './BookFileManager/BookFileManager.component';
 import { BookShelfComponent } from './BookShelf/BookShelf.component';
 import { BookShelfViewComponent } from './BookShelf/BookShelfView/BookShelfView.component';
@@ -72,7 +74,9 @@ export const BreakPointsProvider = {
       BookViewComponent,
       PdfViewComponent,
       BookFileManagerComponent,
-      BookShelfComponent
+      BookShelfComponent,
+      AngularEpubViewerComponent,
+      EpubViewComponent
    ],
    imports: [
       BrowserModule,
@@ -100,7 +104,7 @@ export const BreakPointsProvider = {
       ToolbarService,
       DetailsViewService,
       NgxExtendedPdfViewerService,
-      SearchService
+      SearchService,
       // LinkAnnotationService,
       // BookmarkViewService,
       // MagnificationService,

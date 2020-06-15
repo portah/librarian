@@ -5,7 +5,7 @@ import { check } from 'meteor/check';
 import { promises as fs } from 'fs';
 
 import { of as observableOf, Observable, from as observableFrom, merge, Subscriber, Subject } from 'rxjs';
-import { map, mergeMap, switchMap, delayWhen } from 'rxjs/operators';
+import { map, mergeMap, switchMap, delayWhen, concatMap } from 'rxjs/operators';
 
 import { Publishers, Publisher } from '../modules/publishers';
 import { BookFile, Books, Book } from '/imports/api/books';
@@ -16,7 +16,7 @@ import { FilesUpload } from '/imports/api/ostrioFiles';
 
 const uniqName = true;
 
-const bound = Meteor.bindEnvironment(callback => callback());
+// const bound = Meteor.bindEnvironment(callback => callback());
 
 /**
  *
@@ -44,7 +44,7 @@ function addFile(bookId: string, fileInfo: any) {
 /**
  *
  */
-function checkUpdate(book: any, { authors, description, imageBase64, outline, numPages }) {
+function checkUpdate(book: any, { authors, description, imageBase64, outline, numPages, publisher }) {
 
     let setB = {};
 
@@ -63,14 +63,17 @@ function checkUpdate(book: any, { authors, description, imageBase64, outline, nu
     if (!book.numPages && numPages) {
         setB = { ...setB, numPages };
     }
+    if (!book.publisher && publisher) {
+        setB = { ...setB, publisher };
+    }
 
     if (Object.keys(setB).length > 0) {
         Books.update({ _id: book._id }, {
             $set: { ...setB }
         });
     }
-
 }
+
 /**
  *
  */
@@ -81,21 +84,35 @@ Meteor.methods({
         check(baseFolders, [String]);
         const publishers: Publisher[] = Publishers.find().fetch();
         const globalList: any[] = [];
+        let timeout = 1000;
         observableFrom(baseFolders)
             .pipe(
-                mergeMap((baseFolder: string) => observableFrom(walk(baseFolder, baseFolder, Meteor.settings.extensions))),
-                mergeMap((list: any[]): Observable<any> => {
+                concatMap((baseFolder: string) => observableFrom(walk(baseFolder, baseFolder, Meteor.settings.extensions))),
+                concatMap((list: any[]): Observable<any> => {
+                    // // Logger.debug(list);
+                    // return observableFrom(list);
 
-                    if (list && list.length > 0) {
+                    if (list && list.length > 0 && globalList.length === 0) {
                         globalList.push(...list);
-                        Logger.info(globalList);
+                        // Logger.info(globalList);
                         Meteor.setTimeout(() => {
                             makeSequence.next(globalList.shift());
-                        }, 1000);
+                        }, timeout);
                     }
                     return makeSequence;
+                    // .pipe(
+                    //     concatMap((...args): Observable<any> => {
+                    //         return Observable.create((observer: any) => {
+                    //             this.unblock();
+                    //             Meteor.setTimeout(() => {
+                    //                 observer.next(...args);
+                    //                 observer.complete();
+                    //             }, timeout);
+                    //         });
+                    //     })
+                    // );
                 }),
-                switchMap((fileInfo: BookFile): Observable<{ pdfBook?: any, fileInfo: any, epubBook?: any }> => {
+                concatMap((fileInfo: BookFile): Observable<{ pdfBook?: any, fileInfo: any, epubBook?: any }> => {
                     const filePath = `${fileInfo.root}/${fileInfo.dir}/${fileInfo.base}`;
 
                     let book: Book | any;
@@ -121,7 +138,9 @@ Meteor.methods({
                                     mergeMap((file) => {
                                         return observableFrom(pdfParser(file))
                                             .pipe(
-                                                map((pdfData: any) => ({ pdfBook: (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo }))
+                                                map((pdfData: any) =>
+                                                    ({ pdfBook: (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo })
+                                                )
                                             );
                                     })
                                 );
@@ -134,19 +153,33 @@ Meteor.methods({
                             return (new epubParser(filePath))
                                 .epubParse()
                                 .pipe(
-                                    map((epubData: any) => ({ epubBook: (new ScrapeEpubFile(epubData, fileInfo, publishers)).scrapeEpubFile(), fileInfo }))
+                                    map((epubData: any) =>
+                                        ({ epubBook: epubData ? (new ScrapeEpubFile(epubData, fileInfo, publishers)).scrapeEpubFile() : null, fileInfo })
+                                    )
                                 );
                         }
                     }
                     return observableOf({ pdfBook: null, epubBook: null, fileInfo });
-                })
+                }),
+                // concatMap((...args): Observable<any> => {
+                //     return Observable.create((observer: any) => {
+                //         this.unblock();
+                //         Meteor.setTimeout(() => {
+                //             observer.next(...args);
+                //             observer.complete();
+                //         }, 1000);
+                //     });
+                // })
             )
             .subscribe(({ pdfBook, fileInfo, epubBook }) => {
+                this.unblock();
                 if (!pdfBook && !epubBook) {
-                    Logger.error('Unsupported extension or skip because already exists:', fileInfo.ext);
+                    Logger.error(`Skip: ${fileInfo.root}/${fileInfo.dir}/${fileInfo.base}`);
                     if (globalList.length > 0) {
+                        // timeout = 10;
                         makeSequence.next(globalList.shift());
-                        this.unblock();
+                    } else {
+                        makeSequence.complete();
                     }
                     return;
                 }
@@ -204,7 +237,7 @@ Meteor.methods({
                             });
                         }
                     }
-                    checkUpdate(book, { description, authors, imageBase64, outline, numPages });
+                    checkUpdate(book, { description, authors, imageBase64, outline, numPages, publisher });
 
                 } else {
                     /**
@@ -214,13 +247,15 @@ Meteor.methods({
                     fileInfo._id = addFile(bookId, fileInfo);
                     Books.update({ _id: bookId }, { $set: { fileInfo } });
                     Logger.info((pdfBook || epubBook).title, bookId, fileInfo, fileInfo._id);
-
                 }
+
                 if (globalList.length > 0) {
+                    this.unblock();
                     Meteor.setTimeout(() => {
                         makeSequence.next(globalList.shift());
-                    }, 1000);
-                    this.unblock();
+                    }, timeout * 2);
+                } else {
+                    makeSequence.complete();
                 }
             });
     }

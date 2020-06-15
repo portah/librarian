@@ -68,7 +68,7 @@ export interface Book {
 export const Books = new Mongo.Collection<Book>('books');
 
 Meteor.startup(() => {
-    Books._ensureIndex({ title: 1, base: 1, name: 1 });
+    Books._ensureIndex({ title: 1, base: 1, name: 1, 'fileInfo.mtimeMs': 1 });
 });
 
 
