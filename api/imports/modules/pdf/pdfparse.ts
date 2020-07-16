@@ -2,7 +2,9 @@
  *  Working With PDF?
  *  pdfjs
  */
-import { PDFDocumentProxy, version, getDocument } from 'pdfjs-dist';
+var pdfjsLib = require("pdfjs-dist/es5/build/pdf.js");
+// import { PDFDocumentProxy, version, getDocument } from 'pdfjs-dist';
+var { PDFDocumentProxy, version, getDocument } = pdfjsLib;
 // import * as PDFJS from 'pdfjs-dist';
 import * as Canvas from 'canvas';
 import { Logger } from '../logger';
@@ -129,7 +131,7 @@ export async function PDF(dataBuffer: any, options?: any) {
     // the URL of the script to be loaded, and dynamically loading a cross-origin
     // script does not work).
     // PDFJS.disableWorker = true;
-    const doc: PDFDocumentProxy | any = await getDocument(dataBuffer);
+    const doc: PDFDocumentProxy | any = await getDocument(dataBuffer).promise;
     ret.numPages = doc.numPages;
 
     const metaData = await doc.getMetadata();

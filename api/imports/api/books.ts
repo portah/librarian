@@ -52,7 +52,13 @@ export interface Book {
     nlpTerms?: NLPTerm[];
 
     publisher?: Publisher;
-    fileInfo: BookFile;
+    fileInfo: {
+        root: string;
+        dir: string;
+        name: string;
+        pdf?: BookFile;
+        epub?: BookFile;
+    };
     recent?: {
         page: number;
         zoom: string | number;

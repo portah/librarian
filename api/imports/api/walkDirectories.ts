@@ -247,7 +247,17 @@ Meteor.methods({
                      */
                     const bookId = Books.insert(pdfBook || epubBook);
                     fileInfo._id = addFile(bookId, fileInfo);
-                    Books.update({ _id: bookId }, { $set: { fileInfo } });
+                    Books.update({ _id: bookId }, { $set: { fileInfo: {
+                        root: fileInfo.root,
+                        dir: fileInfo.dir,
+                        name: fileInfo.name
+                    } } });
+                    if (pdfBook) {
+                        Books.update({ _id: bookId }, { $set: { 'fileInfo.pdf': fileInfo } });
+                    }
+                    if (epubBook) {
+                        Books.update({ _id: bookId }, { $set: { 'fileInfo.epub': fileInfo } });
+                    }
                     Logger.info((pdfBook || epubBook).title, bookId, fileInfo, fileInfo._id);
                 }
 

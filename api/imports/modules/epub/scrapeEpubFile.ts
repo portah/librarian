@@ -60,7 +60,7 @@ export class ScrapeEpubFile extends ScrapeFile {
         epubBook.numPages = undefined;
         epubBook.description = description;
         epubBook.publisher = publisher;
-        epubBook.fileInfo = fileInfo;
+        // epubBook.fileInfo = fileInfo;
         epubBook.outline = epubData.toc || [];
         const { text, imageBase64, epub, ...printData } = epubData;
         Logger.debug('EPUB Book: ', epubBook, printData);

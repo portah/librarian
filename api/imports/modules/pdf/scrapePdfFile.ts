@@ -186,7 +186,7 @@ export class ScrapePDFFile extends ScrapeFile {
         pdfBook.numPages = pdfData.numPages;
         pdfBook.description = description;
         pdfBook.publisher = publisher;
-        pdfBook.fileInfo = fileInfo;
+        // pdfBook.fileInfo = fileInfo;
         pdfBook.outline = pdfData.outline || [];
         const { text, imageBase64, ...printData } = pdfData;
         Logger.debug('PDF Book: ', pdfBook, printData);
