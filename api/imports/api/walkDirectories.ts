@@ -128,9 +128,10 @@ Meteor.methods({
                             'fileInfo.name': fileInfo.name
                         });
                     }
+                    // TODO: root change! check dir & name
 
                     if (fileInfo.ext === '.pdf') { // Working on .pdf file on disk
-                        if (book && (book.fileInfo.ext === '.pdf' || book.pdf)) {
+                        if (book && book.fileInfo && book.fileInfo.pdf) {
                             return observableOf({ fileInfo }); // skip, any updates in subscription
                         } else {
                             return observableFrom(fs.readFile(filePath))
@@ -147,7 +148,7 @@ Meteor.methods({
                         }
                     }
                     if (fileInfo.ext === '.epub') {
-                        if (book && (book.fileInfo.ext === '.epub' || book.epub)) {
+                        if (book && book.fileInfo && book.fileInfo.epub) {
                             return observableOf({ fileInfo }); // skip, any updates in subscription
                         } else {
                             return (new epubParser(filePath))
@@ -197,17 +198,18 @@ Meteor.methods({
                         'fileInfo.name': fileInfo.name
                     });
                 }
+                // TODO: root change! check dir & name
 
                 if (book) {
                     const { title, authors, isbn, description, publisher, outline, imageBase64, nlpTags, nlpTerms, numPages } = epubBook || pdfBook;
-                    if (epubBook && book.fileInfo.ext === '.pdf') {
+                    if (epubBook && book.fileInfo.pdf) {
 
                         // alternatives
-                        if (!book.epub) {
+                        if (!book.fileInfo.epub) {
                             fileInfo._id = addFile(book._id, fileInfo);
                             Books.update({ _id: book._id }, {
                                 $set: {
-                                    epub: {
+                                    'fileInfo.epub': {
                                         title,
                                         authors,
                                         isbn,
@@ -220,12 +222,12 @@ Meteor.methods({
                         }
                     }
 
-                    if (pdfBook && book.fileInfo.ext === '.epub') {
-                        if (!book.pdf) {
+                    if (pdfBook && book.fileInfo.epub) {
+                        if (!book.fileInfo.pdf) {
                             fileInfo._id = addFile(book._id, fileInfo);
                             Books.update({ _id: book._id }, {
                                 $set: {
-                                    pdf: {
+                                    'fileInfo.pdf': {
                                         title,
                                         authors,
                                         isbn,

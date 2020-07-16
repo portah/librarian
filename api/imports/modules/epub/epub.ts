@@ -54,7 +54,7 @@ export class EPUB {
         this.epub = new EPub(this.epubfile, this.imagewebroot, this.chapterwebroot);
         this.epubReady = new Promise((resolve) => {
             this.epub.on('end', () => resolve(this.epub));
-            this.epub.on('error', (error) => {
+            this.epub.on('error', (error: any) => {
                 Logger.error(`Error in ${this.epubfile}`, error);
                 resolve(null);
             });
@@ -65,8 +65,12 @@ export class EPUB {
     static getCoverFromText({ title = '', year = '', publisher = '' }) {
         const { canvas, context } = (new NodeCanvasFactory()).create(maxWidth, maxHeight);
 
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, canvas.width, canvas.height);
         // On first page
-        context.font = '22px Helvetica';
+        context.font = 'bold 30px Helvetica, verdana, sans-serif';
+        context.fillStyle = '#000000';
+
         if (title) {
             context.fillText(title, 50, 100, maxWidth - 50);
         }

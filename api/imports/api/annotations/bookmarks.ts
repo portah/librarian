@@ -31,7 +31,7 @@ Meteor.publish('bookmarks', function (params?) {
         ...params
     };
 
-    Logger.debug('books/recent: ', params);
+    Logger.debug('bookmarks: ', params);
 
     // if (!Roles.userIsInRole(Meteor.userId(), ['admin', 'billing'], Roles.GLOBAL_GROUP)) {
     //     params.filtering["userId"] = Meteor.userId();
@@ -43,9 +43,9 @@ Meteor.publish('bookmarks', function (params?) {
 
 
 Meteor.methods({
-    'mark/bookmark': function (bookData: any) {
+    'mark/bookmark/pdf': function (bookData: any) {
 
-        Logger.debug('mark/bookmark', bookData);
+        Logger.debug('mark/bookmark/pdf', bookData);
         check(bookData, {
             _id: String,
             pageNumber: Number,
@@ -87,6 +87,5 @@ Meteor.methods({
                     Annotations.insert({ ...bookmark });
                 }
             );
-
     }
 });
