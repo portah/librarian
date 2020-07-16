@@ -209,13 +209,13 @@ Meteor.methods({
                             fileInfo._id = addFile(book._id, fileInfo);
                             Books.update({ _id: book._id }, {
                                 $set: {
-                                    'fileInfo.epub': {
+                                    'fileInfo.epub': fileInfo,
+                                    altInfo: {
                                         title,
                                         authors,
                                         isbn,
                                         description,
-                                        publisher,
-                                        fileInfo
+                                        publisher
                                     }
                                 }
                             });
@@ -227,13 +227,13 @@ Meteor.methods({
                             fileInfo._id = addFile(book._id, fileInfo);
                             Books.update({ _id: book._id }, {
                                 $set: {
-                                    'fileInfo.pdf': {
+                                    'fileInfo.pdf': fileInfo,
+                                    altInfo: {
                                         title,
                                         authors,
                                         isbn,
                                         description,
-                                        publisher,
-                                        fileInfo
+                                        publisher
                                     }
                                 }
                             });
