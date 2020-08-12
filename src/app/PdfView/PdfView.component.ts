@@ -220,7 +220,7 @@ export class PdfViewComponent extends BaseComponent implements OnInit, AfterView
      *
      */
     ngOnDestroy() {
-        super.ngOnDestroy();
+        super.cleanup();
 
     }
 

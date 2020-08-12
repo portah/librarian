@@ -139,7 +139,7 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
      *
      */
     ngOnDestroy() {
-        super.ngOnDestroy();
+        super.cleanup();
 
     }
 

@@ -148,7 +148,7 @@ export class EpubViewComponent extends BaseComponent implements OnInit, AfterVie
      *
      */
     ngOnDestroy() {
-        super.ngOnDestroy();
+        super.cleanup();
 
     }
 

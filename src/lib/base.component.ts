@@ -9,7 +9,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 
 import { Tracking } from './tracking';
 
-export class BaseComponent extends Tracking implements OnDestroy {
+export class BaseComponent extends Tracking {
     id = Random.id();
 
     public showError;

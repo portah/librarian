@@ -3,7 +3,8 @@
 // The full license information can be found in LICENSE in the root directory of this project.
 
 @import '~@clr/ui/clr-core/styles/mixins/utils';
-@import '~@clr/ui/clr-core/styles/variables/variables';
+@import '~@clr/ui/src/utils/variables/variables.color';
+@import '~@clr/ui/src/utils/variables/variables.global';
 @import '~@clr/ui/src/utils/variables.clarity';
 
 $clr-icons-hero-height: $clr_baselineRem_10;

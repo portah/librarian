@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Injectable } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { BookStorageLayoutComponent } from './BookStorageLayout/BookStorageLayout.component';
@@ -14,6 +14,7 @@ import { BookShelfViewComponent } from './BookShelf/BookShelfView/BookShelfView.
 import { RouteReuseStrategy, ActivatedRouteSnapshot, DetachedRouteHandle } from '@angular/router';
 // import { CustomReuseStrategy, Routing } from './shared/routing';
 
+@Injectable()
 export class CustomReuseStrategy implements RouteReuseStrategy {
     routesToCache: string[] = ["bookshelf"];
     storedRouteHandles = new Map<string, DetachedRouteHandle>();
