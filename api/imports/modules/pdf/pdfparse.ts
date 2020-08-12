@@ -2,9 +2,9 @@
  *  Working With PDF?
  *  pdfjs
  */
-var pdfjsLib = require("pdfjs-dist/es5/build/pdf.js");
-// import { PDFDocumentProxy, version, getDocument } from 'pdfjs-dist';
-var { PDFDocumentProxy, version, getDocument } = pdfjsLib;
+const pdfjsLib = require('pdfjs-dist/es5/build/pdf.js');
+import { PDFDocumentProxy } from 'pdfjs-dist';
+const { version, getDocument } = pdfjsLib;
 // import * as PDFJS from 'pdfjs-dist';
 import * as Canvas from 'canvas';
 import { Logger } from '../logger';
@@ -163,31 +163,34 @@ export async function PDF(dataBuffer: any, options?: any) {
         if (onePage <= 0) {
             onePage = 1;
         }
-
-        const pageText = await doc.getPage(onePage)
-            .then(async (pageData: any) => {
-                ret.imageBase64 = 'data:image/png;base64,' + await image_page(pageData);
-                return options.pagerender(pageData);
-            });
-
-        ret.text = `${ret.text}\n\n${pageText}`;
-
-    } else {
-        for (let i = 1; i <= counter; i++) {
-            const pageText = await doc.getPage(i)
+        try {
+            const pageText = await doc.getPage(onePage)
                 .then(async (pageData: any) => {
-                    if (i === 1) {
-                        ret.imageBase64 = 'data:image/png;base64,' + await image_page(pageData);
-                    }
+                    ret.imageBase64 = 'data:image/png;base64,' + await image_page(pageData);
                     return options.pagerender(pageData);
                 });
-            // .catch((err: any) => {
-            //     // todo log err using debug
-            //     // debugger;
-            //     return '';
-            // });
 
             ret.text = `${ret.text}\n\n${pageText}`;
+        } catch (error) {
+            ret.error = error || true;
+            Logger.error(error);
+        }
+    } else {
+        for (let i = 1; i <= counter && !ret.error; i++) {
+            try {
+                const pageText = await doc.getPage(i)
+                    .then(async (pageData: any) => {
+                        if (i === 1) {
+                            ret.imageBase64 = 'data:image/png;base64,' + await image_page(pageData);
+                        }
+                        return options.pagerender(pageData);
+                    });
+                ret.text = `${ret.text}\n\n${pageText}`;
+            } catch (error) {
+                ret.error = error || true;
+                Logger.error(error);
+            }
+
         }
     }
     ret.numrender = counter;

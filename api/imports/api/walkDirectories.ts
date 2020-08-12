@@ -118,14 +118,34 @@ Meteor.methods({
                     let book: Book | any;
                     if (uniqName) {
                         book = Books.findOne({
-                            'fileInfo.root': fileInfo.root,
-                            'fileInfo.name': fileInfo.name
+                            $and: [
+                                {
+                                    'fileInfo.name': {
+                                        $regex: fileInfo.name,
+                                        $options: 'i'
+                                    }
+                                },
+                                {
+                                    'fileInfo.root': fileInfo.root
+                                }
+                            ]
                         });
                     } else {
                         book = Books.findOne({
-                            'fileInfo.root': fileInfo.root,
-                            'fileInfo.dir': fileInfo.dir,
-                            'fileInfo.name': fileInfo.name
+                            $and: [
+                                {
+                                    'fileInfo.name': {
+                                        $regex: fileInfo.name,
+                                        $options: 'i'
+                                    }
+                                },
+                                {
+                                    'fileInfo.root': fileInfo.root
+                                },
+                                {
+                                    'fileInfo.dir': fileInfo.dir,
+                                }
+                            ]
                         });
                     }
                     // TODO: root change! check dir & name
@@ -140,7 +160,7 @@ Meteor.methods({
                                         return observableFrom(pdfParser(file))
                                             .pipe(
                                                 map((pdfData: any) =>
-                                                    ({ pdfBook: (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo })
+                                                    ({ pdfBook: pdfData.error ? null : (new ScrapePDFFile(pdfData, fileInfo, publishers)).scrapePDFFile(), fileInfo })
                                                 )
                                             );
                                     })
@@ -178,7 +198,9 @@ Meteor.methods({
                     Logger.error(`Skip: ${fileInfo.root}/${fileInfo.dir}/${fileInfo.base}`);
                     if (globalList.length > 0) {
                         // timeout = 10;
-                        makeSequence.next(globalList.shift());
+                        Meteor.setTimeout(() => {
+                            makeSequence.next(globalList.shift());
+                        }, 0);
                     } else {
                         makeSequence.complete();
                     }
@@ -188,17 +210,36 @@ Meteor.methods({
                 let book: Book | any;
                 if (uniqName) {
                     book = Books.findOne({
-                        'fileInfo.root': fileInfo.root,
-                        'fileInfo.name': fileInfo.name
+                        $and: [
+                            {
+                                'fileInfo.name': {
+                                    $regex: fileInfo.name,
+                                    $options: 'i'
+                                }
+                            },
+                            {
+                                'fileInfo.root': fileInfo.root
+                            }
+                        ]
                     });
                 } else {
                     book = Books.findOne({
-                        'fileInfo.root': fileInfo.root,
-                        'fileInfo.dir': fileInfo.dir,
-                        'fileInfo.name': fileInfo.name
+                        $and: [
+                            {
+                                'fileInfo.name': {
+                                    $regex: fileInfo.name,
+                                    $options: 'i'
+                                }
+                            },
+                            {
+                                'fileInfo.root': fileInfo.root
+                            },
+                            {
+                                'fileInfo.dir': fileInfo.dir,
+                            }
+                        ]
                     });
-                }
-                // TODO: root change! check dir & name
+                }                // TODO: root change! check dir & name
 
                 if (book) {
                     const { title, authors, isbn, description, publisher, outline, imageBase64, nlpTags, nlpTerms, numPages } = epubBook || pdfBook;
@@ -247,11 +288,15 @@ Meteor.methods({
                      */
                     const bookId = Books.insert(pdfBook || epubBook);
                     fileInfo._id = addFile(bookId, fileInfo);
-                    Books.update({ _id: bookId }, { $set: { fileInfo: {
-                        root: fileInfo.root,
-                        dir: fileInfo.dir,
-                        name: fileInfo.name
-                    } } });
+                    Books.update({ _id: bookId }, {
+                        $set: {
+                            fileInfo: {
+                                root: fileInfo.root,
+                                dir: fileInfo.dir,
+                                name: fileInfo.name
+                            }
+                        }
+                    });
                     if (pdfBook) {
                         Books.update({ _id: bookId }, { $set: { 'fileInfo.pdf': fileInfo } });
                     }

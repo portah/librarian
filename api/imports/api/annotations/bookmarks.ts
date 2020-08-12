@@ -78,7 +78,10 @@ Meteor.methods({
                     return observableFrom(pdfParser(file, { page: bookmark.pageNumber }));
                 })
             ).subscribe(
-                ({ text, imageBase64 }) => {
+                ({ text, imageBase64, error }) => {
+                    if (error) {
+                        throw new Meteor.Error(error);
+                    }
                     bookmark.bookmarkTime = Date.now() / 1000.0;
                     bookmark.text = text;
                     bookmark.imageBase64 = imageBase64;
