@@ -180,7 +180,7 @@ export class PdfViewComponent extends BaseComponent implements OnInit, AfterView
                     this.recentLocation = book.recent;
                     this.bookStatLocation(book.recent);
                 }
-                let fileId = book.fileInfo.ext === '.pdf' ? book.fileInfo._id : book.pdf?.fileInfo._id;
+                let fileId = book.fileInfo.pdf._id;
                 if (!fileId) {
                     return of(({ params, book, file: null }));
                 } else {

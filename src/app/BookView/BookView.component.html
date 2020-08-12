@@ -7,12 +7,12 @@
     <div style="max-width: 500px;">
       <img [src]="book?.imageBase64" style="min-width: 320px; width: 100%;">
       <div fxLayout="row">
-        <button [disabled]="!(book?.fileInfo.ext === '.pdf' || book?.pdf?.fileInfo.ext === '.pdf')" routerLink="/pdfbook/{{book?._id}}" class="btn btn-primary">
+        <button [disabled]="!(book?.fileInfo.pdf)" routerLink="/pdfbook/{{book?._id}}" class="btn btn-primary">
           <clr-icon shape="book" title="pdf"></clr-icon>
           open pdf
         </button>
         <div fxFlex></div>
-        <button [disabled]="!(book?.fileInfo.ext === '.epub' || book?.epub?.fileInfo.ext === '.epub')" routerLink="/epubbook/{{book?._id}}" class="btn btn-primary" style="margin-right: 0;">
+        <button [disabled]="!(book?.fileInfo.epub)" routerLink="/epubbook/{{book?._id}}" class="btn btn-primary" style="margin-right: 0;">
           <clr-icon shape="book" title="epub"></clr-icon>
           open epub
         </button>
@@ -35,6 +35,8 @@
         </a>
       </div>
     </h4>
+    <h4>Path:&nbsp; {{book?.fileInfo?.root}}/{{book?.fileInfo?.name}} </h4>
+    <h4> <a [href]="fileUrl">{{book?.fileInfo?.name}}</a></h4>
     <br />
     <div style="text-align: justify;" [innerHTML]="sanitizer.bypassSecurityTrustHtml(book?.description)"></div>
     <!-- <p class="p2">Section header</p>

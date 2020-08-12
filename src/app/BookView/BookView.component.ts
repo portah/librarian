@@ -12,7 +12,7 @@ import {
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Location, LocationStrategy } from '@angular/common';
 
-import { pipe, Subject, fromEvent, merge, zip, of, combineLatest, from} from 'rxjs';
+import { pipe, Subject, fromEvent, merge, zip, of, combineLatest, from } from 'rxjs';
 import { switchMap, map, mergeMap, debounceTime, first, takeWhile, skipUntil, take, shareReplay, filter, reduce } from 'rxjs/operators';
 import { NgxExtendedPdfViewerComponent, IPDFViewerApplication, NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -90,10 +90,24 @@ export class BookViewComponent extends BaseComponent implements OnInit, AfterVie
                 if (book.recent && !this.recentLocation) {
                     this.recentLocation = book.recent;
                 }
-                return this.booksService.file$(book.fileInfo._id)
-                    .pipe(
-                        map((file) => ({ params, book, file })),
-                    );
+                const {epub, pdf, ...fileInfo} = book.fileInfo;
+
+                if (epub && pdf) {
+                    return this.booksService.file$(pdf._id)
+                        .pipe(
+                            map((file) => ({ params, book, file })),
+                        );
+                } else if(epub){
+                    return this.booksService.file$(epub._id)
+                        .pipe(
+                            map((file) => ({ params, book, file })),
+                        );
+                } else {
+                    return this.booksService.file$(pdf._id)
+                        .pipe(
+                            map((file) => ({ params, book, file })),
+                        );
+                }
             })
         ).subscribe(({ params, book, file }: any) => {
             console.log(file, file.link());

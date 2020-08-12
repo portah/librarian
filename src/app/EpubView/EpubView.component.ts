@@ -101,7 +101,7 @@ export class EpubViewComponent extends BaseComponent implements OnInit, AfterVie
                 //     this.recentLocation = book.recent;
                 //     this.bookStatLocation(book.recent);
                 // }
-                let fileId = book.fileInfo.ext === '.epub' ? book.fileInfo._id : book.epub?.fileInfo._id;
+                const fileId = book.fileInfo.epub?._id;
                 if (!fileId) {
                     return of(({ params, book, file: null }));
                 } else {
@@ -127,7 +127,7 @@ export class EpubViewComponent extends BaseComponent implements OnInit, AfterVie
                 console.log(toc, toc.toc);
                 this.toc = toc.toc;
             }
-        )
+        );
         // this.pdfViewer$.subscribe((v: any) => {
         //     if (v && v.location) {
         //         console.log(v);
