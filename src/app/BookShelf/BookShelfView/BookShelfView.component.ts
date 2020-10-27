@@ -25,6 +25,7 @@ import { SearchService } from '../../search.service';
 export class BookShelfViewComponent extends Tracking implements OnInit {
 
     books: any[] = [];
+    public booksSelectedMap = new Map();
     count = 0;
 
     constructor(
@@ -82,4 +83,11 @@ export class BookShelfViewComponent extends Tracking implements OnInit {
     ngOnInit() {
     }
 
+    booksSelected(event, book) {
+        console.log(event, book, this.booksSelectedMap);
+    }
+
+    bookSelect(event, book) {
+        event.stopPropagation();
+    }
 }

@@ -1,0 +1,32 @@
+<!-- <ng-content></ng-content> -->
+<!-- <div class="overlay"
+    *ngIf="state"
+    [@hover]="state"
+    (@hover.done)="onDone($event)">
+  <ng-content select="[overlay]"></ng-content>
+</div> -->
+
+
+<a routerLink="/book/{{book?._id}}" class="card clickable" style="margin: 0px !important; ">
+  <!-- <div class="card-header">
+        {{book.title| shorten: 8: '...'}}
+      </div> -->
+  <!-- <div class="card-img"> -->
+    <img [src]="book?.imageBase64" fxFill>
+  <!-- </div> -->
+
+  <!-- <div style="position: absolute; top: 0; width: 100%; height: 100%; background-color: #000; opacity: 0.5">
+  </div> -->
+  <!-- <div class="card-block"> -->
+  <!-- <div class="card-text"> -->
+  <!-- {{book.title | shorten: 8: '...'}} -->
+  <!-- </div> -->
+  <!-- </div> -->
+</a>
+<div class="bookShelf" *ngIf="state && stateToShow" [@hover]="state" (@hover.done)="onDone($event)" fxFill>
+  <!-- <ng-content select="[overlay]"></ng-content> -->
+  <div style="padding-left: 2px; margin-left: 2px;">
+    <input type="checkbox" clrCheckbox (change)="bookSelect($event, book)" [(ngModel)]="selected"/>
+  </div>
+  <div routerLink="/book/{{book?._id}}" fxFill>&nbsp;</div>
+</div>
