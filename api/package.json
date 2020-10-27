@@ -4,14 +4,14 @@
     "scripts": {
         "api": "ROOT_URL=http://localhost:3030/ MONGO_URL=mongodb://localhost:27017/bookstorage meteor --port 3030 --settings private/settings.json --raw-logs|./node_modules/bunyan/bin/bunyan -L",
         "meteor:old": "ROOT_URL= MONGO_URL=mongodb://localhost:27017/bookstorage meteor --port 3030 --settings private/settings.json --production",
-        "build": "AOT=1 ROLLUP=1 meteor build ../api-build",
+        "build": "meteor build ../api-build",
         "test": "meteor test --once --driver-package meteortesting:mocha",
         "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
         "visualize": "meteor --production --extra-packages bundle-visualizer"
     },
     "dependencies": {
-        "@babel/runtime": "^7.10.5",
-        "bcrypt": "^4.0.1",
+        "@babel/runtime": "^7.11.2",
+        "bcrypt": "^5.0.0",
         "bunyan": "^2.0.4",
         "canvas": "^2.6.1",
         "chokidar": "^3.4.0",
@@ -20,10 +20,11 @@
         "express": "^4.17.1",
         "hummus": "^1.0.108",
         "js-yaml": "^3.14.0",
-        "jsonwebtoken": "^8.4.0",
+        "jsonwebtoken": "^8.5.0",
         "libxmljs-dom": "git+https://github.com/jfsimon/libxmljs-dom.git",
         "meteor-node-stubs": "^1.0.0",
-        "natural": "^0.6.3",
+        "natural": "^2.1.0",
+        "needle": "^2.5.0",
         "osmosis": "^1.1.10",
         "pdf-parse": "^1.1.1",
         "pdfjs-dist": "^2.4.456",
@@ -42,7 +43,7 @@
         "@types/osmosis": "^1.1.1",
         "@types/pdf": "0.0.31",
         "@types/pdfjs-dist": "^2.1.4",
-        "typescript": "^3.9.6"
+        "typescript": "^4.0.0"
     },
     "devDel": {
         "needle": "^2.4.1",
