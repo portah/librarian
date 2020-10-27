@@ -56,6 +56,7 @@ export interface Book {
         root: string;
         dir: string;
         name: string;
+        searchName: string,
         pdf?: BookFile;
         epub?: BookFile;
     };
@@ -75,6 +76,8 @@ export const Books = new Mongo.Collection<Book>('books');
 
 Meteor.startup(() => {
     Books._ensureIndex({ title: 1, base: 1, name: 1, 'fileInfo.mtimeMs': 1 });
+    Books._ensureIndex({ 'fileInfo.name': 1 }, { collation: { locale: 'en', strength: 1 } } );
+    Books._ensureIndex({ 'fileInfo.searchName': 1 });
 });
 
 
