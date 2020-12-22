@@ -29,6 +29,12 @@ import {
 
 import { NgxExtendedPdfViewerModule, NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -43,12 +49,8 @@ import { EpubViewComponent } from './EpubView/EpubView.component';
 import { BookFileManagerComponent } from './BookFileManager/BookFileManager.component';
 import { BookShelfComponent } from './BookShelf/BookShelf.component';
 import { BookShelfViewComponent } from './BookShelf/BookShelfView/BookShelfView.component';
+import { HoverContainerComponent } from './HoverContainer/HoverContainer.component';
 
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 export const MD_MATERIAL_MODULES: Array<any> = [
    MatPaginatorModule,
@@ -76,7 +78,8 @@ export const BreakPointsProvider = {
       BookFileManagerComponent,
       BookShelfComponent,
       AngularEpubViewerComponent,
-      EpubViewComponent
+      EpubViewComponent,
+      HoverContainerComponent
    ],
    imports: [
       BrowserModule,
@@ -89,32 +92,32 @@ export const BreakPointsProvider = {
       NgxExtendedPdfViewerModule,
       FormsModule,
       HttpClientModule,
-      // PdfViewerModule,
-      // PdfViewerComponent,
-      // DialogModule,
-      // ToolbarModule,
-      // ButtonModule,
-      // CheckBoxModule
+      //PdfViewerModule,
+      //PdfViewerComponent,
+      //DialogModule,
+      //ToolbarModule,
+      //ButtonModule,
+      //CheckBoxModule
    ],
    providers: [
       BooksService,
       ReversePipe,
-      // BreakPointsProvider,
+      //BreakPointsProvider,
       NavigationPaneService,
       ToolbarService,
       DetailsViewService,
       NgxExtendedPdfViewerService,
       SearchService,
-      // LinkAnnotationService,
-      // BookmarkViewService,
-      // MagnificationService,
-      // ThumbnailViewService,
-      // NavigationService,
-      // TextSearchService,
-      // TextSelectionService,
-      // PrintService,
-      // AnnotationService,
-      // FormFieldsService
+      //LinkAnnotationService,
+      //BookmarkViewService,
+      //MagnificationService,
+      //ThumbnailViewService,
+      //NavigationService,
+      //TextSearchService,
+      //TextSelectionService,
+      //PrintService,
+      //AnnotationService,
+      //FormFieldsService
    ],
    bootstrap: [
       AppComponent
