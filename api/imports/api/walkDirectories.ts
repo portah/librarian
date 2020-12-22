@@ -44,7 +44,7 @@ function addFile(bookId: string, fileInfo: any) {
 /**
  *
  */
-function checkUpdate(book: any, { authors, description, imageBase64, outline, numPages, publisher }) {
+function checkUpdate(book: any, { authors, description, imageBase64, outline, numPages, publisher }: any) {
 
     let setB = {};
 
@@ -120,10 +120,7 @@ Meteor.methods({
                         book = Books.findOne({
                             $and: [
                                 {
-                                    'fileInfo.name': {
-                                        $regex: fileInfo.name,
-                                        $options: 'i'
-                                    }
+                                    'fileInfo.searchName': fileInfo.name.toUpperCase()
                                 },
                                 {
                                     'fileInfo.root': fileInfo.root
@@ -134,10 +131,7 @@ Meteor.methods({
                         book = Books.findOne({
                             $and: [
                                 {
-                                    'fileInfo.name': {
-                                        $regex: fileInfo.name,
-                                        $options: 'i'
-                                    }
+                                    'fileInfo.searchName': fileInfo.name.toUpperCase()
                                 },
                                 {
                                     'fileInfo.root': fileInfo.root
@@ -212,10 +206,7 @@ Meteor.methods({
                     book = Books.findOne({
                         $and: [
                             {
-                                'fileInfo.name': {
-                                    $regex: fileInfo.name,
-                                    $options: 'i'
-                                }
+                                'fileInfo.searchName': fileInfo.name.toUpperCase()
                             },
                             {
                                 'fileInfo.root': fileInfo.root
@@ -226,10 +217,7 @@ Meteor.methods({
                     book = Books.findOne({
                         $and: [
                             {
-                                'fileInfo.name': {
-                                    $regex: fileInfo.name,
-                                    $options: 'i'
-                                }
+                                'fileInfo.searchName': fileInfo.name.toUpperCase()
                             },
                             {
                                 'fileInfo.root': fileInfo.root
@@ -293,7 +281,8 @@ Meteor.methods({
                             fileInfo: {
                                 root: fileInfo.root,
                                 dir: fileInfo.dir,
-                                name: fileInfo.name
+                                name: fileInfo.name,
+                                searchName: fileInfo.name.toUpperCase()
                             }
                         }
                     });
