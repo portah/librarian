@@ -40,7 +40,7 @@ export const getPublishers = () => {
       .done(() => observer.complete());
   }))
     .pipe(
-      filter(($: any) => !$.title.startsWith('List')),
+      filter((_: any) => !!_ && !!_.title && !_.title.startsWith('List')),
       map((item: any) => ({ ...item, url: `https://en.wikipedia.org${item.url}` }))
     );
 };
