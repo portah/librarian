@@ -18,7 +18,7 @@
         "cors": "^2.8.5",
         "epub": "^1.2.1",
         "express": "^4.17.1",
-        "hummus": "^1.0.108",
+        "hummus": "^1.0.111",
         "js-yaml": "^3.14.0",
         "jsonwebtoken": "^8.5.0",
         "libxmljs-dom": "git+https://github.com/jfsimon/libxmljs-dom.git",
