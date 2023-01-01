@@ -23,7 +23,7 @@
         "jsonwebtoken": "^8.5.0",
         "libxmljs-dom": "git+https://github.com/jfsimon/libxmljs-dom.git",
         "meteor-node-stubs": "^1.0.0",
-        "natural": "^2.1.0",
+        "natural": "^2.4.5",
         "needle": "^2.5.0",
         "osmosis": "^1.1.10",
         "pdf-parse": "^1.1.1",
